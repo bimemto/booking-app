@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "228424606341",
+    "firebase_url": "https://admob-app-id-7101158818.firebaseio.com",
+    "project_id": "admob-app-id-7101158818",
+    "storage_bucket": "admob-app-id-7101158818.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228424606341:android:db04cd884dc7cdfe",
+        "android_client_info": {
+          "package_name": "com.dotgears.flappybird"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "228424606341-sef2n8t4eu4qrmihio2hbf1dvmle2v77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwV1PKryc0TI5u2t_zLaSr39Qu_EPvumM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "228424606341-sef2n8t4eu4qrmihio2hbf1dvmle2v77.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228424606341:android:84145c0745acc791b9ffec",
+        "android_client_info": {
+          "package_name": "org.congtruyen.booking_demo_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "228424606341-sef2n8t4eu4qrmihio2hbf1dvmle2v77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwV1PKryc0TI5u2t_zLaSr39Qu_EPvumM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "228424606341-sef2n8t4eu4qrmihio2hbf1dvmle2v77.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
