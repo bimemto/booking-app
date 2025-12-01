@@ -1,0 +1,25 @@
+flutter_native_splash:
+  # Black background color matching the app theme
+  color: "#000000"
+  color_dark: "#000000"
+
+  image: assets/splash.png
+  # Since we don't have a custom logo image yet, we'll use the app icon
+  # You can replace this with a custom splash.png later
+  # For now, we'll configure Android 12+ with just color
+
+  # Fullscreen mode to hide status bar
+  fullscreen: true
+
+  # Android 12+ specific configuration
+  android_12:
+    # Black background
+    color: "#000000"
+    color_dark: "#000000"
+
+    # Icon background color (slightly lighter for contrast)
+    icon_background_color: "#1A1A1A"
+    icon_background_color_dark: "#1A1A1A"
+
+  # Disable web splash for now
+  web: false

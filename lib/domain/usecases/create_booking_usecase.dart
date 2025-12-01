@@ -40,14 +40,14 @@ class CreateBookingUseCase {
       return left('Invalid phone number format (must start with 0 and be 10-11 digits)');
     }
 
-    // Validate pickup location
-    if (booking.pickupLocation.trim().isEmpty) {
-      return left('Pickup location is required');
+    // Validate hotel
+    if (booking.hotel.trim().isEmpty) {
+      return left('Hotel is required');
     }
 
-    // Validate dropoff location
-    if (booking.dropoffLocation.trim().isEmpty) {
-      return left('Dropoff location is required');
+    // Validate arrival time
+    if (booking.arrivalTime.trim().isEmpty) {
+      return left('Arrival time is required');
     }
 
     // Validate number of bags (1-5)

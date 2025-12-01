@@ -63,4 +63,15 @@ class HttpBookingRepositoryImpl implements BookingRepository {
       return left('Failed to update booking status: ${e.toString()}');
     }
   }
+
+  @override
+  Future<Either<String, List<BookingEntity>>> getMyBookings(String deviceId) async {
+    try {
+      final models = await _datasource.getMyBookings(deviceId);
+      final entities = models.map((model) => model.toEntity()).toList();
+      return right(entities);
+    } catch (e) {
+      return left('Failed to get my bookings: ${e.toString()}');
+    }
+  }
 }

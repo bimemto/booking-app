@@ -89,4 +89,19 @@ class MockBookingRepositoryImpl implements BookingRepository {
       return left('Failed to update booking status: ${e.toString()}');
     }
   }
+
+  @override
+  Future<Either<String, List<BookingEntity>>> getMyBookings(String deviceId) async {
+    try {
+      // Simulate network delay
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // Filter bookings by deviceId
+      final myBookings = _bookings.where((b) => b.deviceId == deviceId).toList();
+
+      return right(myBookings);
+    } catch (e) {
+      return left('Failed to get my bookings: ${e.toString()}');
+    }
+  }
 }

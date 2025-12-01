@@ -9,63 +9,24 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i6;
-import 'package:booking_demo_app/domain/entities/booking_entity.dart' as _i8;
-import 'package:booking_demo_app/presentation/pages/booking_detail_page.dart'
-    as _i1;
+import 'package:auto_route/auto_route.dart' as _i5;
+import 'package:booking_demo_app/domain/entities/booking_entity.dart' as _i7;
 import 'package:booking_demo_app/presentation/pages/booking_qr_page.dart'
-    as _i2;
+    as _i1;
 import 'package:booking_demo_app/presentation/pages/create_booking_page.dart'
-    as _i3;
-import 'package:booking_demo_app/presentation/pages/driver_page.dart' as _i4;
-import 'package:booking_demo_app/presentation/pages/qr_scanner_page.dart'
-    as _i5;
-import 'package:flutter/material.dart' as _i7;
+    as _i2;
+import 'package:booking_demo_app/presentation/pages/landing_page.dart' as _i3;
+import 'package:booking_demo_app/presentation/pages/my_bookings_page.dart'
+    as _i4;
+import 'package:flutter/material.dart' as _i6;
 
 /// generated route for
-/// [_i1.BookingDetailPage]
-class BookingDetailRoute extends _i6.PageRouteInfo<BookingDetailRouteArgs> {
-  BookingDetailRoute({
-    _i7.Key? key,
-    required _i8.BookingEntity booking,
-    List<_i6.PageRouteInfo>? children,
-  }) : super(
-         BookingDetailRoute.name,
-         args: BookingDetailRouteArgs(key: key, booking: booking),
-         initialChildren: children,
-       );
-
-  static const String name = 'BookingDetailRoute';
-
-  static _i6.PageInfo page = _i6.PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<BookingDetailRouteArgs>();
-      return _i1.BookingDetailPage(key: args.key, booking: args.booking);
-    },
-  );
-}
-
-class BookingDetailRouteArgs {
-  const BookingDetailRouteArgs({this.key, required this.booking});
-
-  final _i7.Key? key;
-
-  final _i8.BookingEntity booking;
-
-  @override
-  String toString() {
-    return 'BookingDetailRouteArgs{key: $key, booking: $booking}';
-  }
-}
-
-/// generated route for
-/// [_i2.BookingQRPage]
-class BookingQRRoute extends _i6.PageRouteInfo<BookingQRRouteArgs> {
+/// [_i1.BookingQRPage]
+class BookingQRRoute extends _i5.PageRouteInfo<BookingQRRouteArgs> {
   BookingQRRoute({
-    _i7.Key? key,
-    required _i8.BookingEntity booking,
-    List<_i6.PageRouteInfo>? children,
+    _i6.Key? key,
+    required _i7.BookingEntity booking,
+    List<_i5.PageRouteInfo>? children,
   }) : super(
          BookingQRRoute.name,
          args: BookingQRRouteArgs(key: key, booking: booking),
@@ -74,11 +35,11 @@ class BookingQRRoute extends _i6.PageRouteInfo<BookingQRRouteArgs> {
 
   static const String name = 'BookingQRRoute';
 
-  static _i6.PageInfo page = _i6.PageInfo(
+  static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<BookingQRRouteArgs>();
-      return _i2.BookingQRPage(key: args.key, booking: args.booking);
+      return _i1.BookingQRPage(key: args.key, booking: args.booking);
     },
   );
 }
@@ -86,9 +47,9 @@ class BookingQRRoute extends _i6.PageRouteInfo<BookingQRRouteArgs> {
 class BookingQRRouteArgs {
   const BookingQRRouteArgs({this.key, required this.booking});
 
-  final _i7.Key? key;
+  final _i6.Key? key;
 
-  final _i8.BookingEntity booking;
+  final _i7.BookingEntity booking;
 
   @override
   String toString() {
@@ -97,49 +58,49 @@ class BookingQRRouteArgs {
 }
 
 /// generated route for
-/// [_i3.CreateBookingPage]
-class CreateBookingRoute extends _i6.PageRouteInfo<void> {
-  const CreateBookingRoute({List<_i6.PageRouteInfo>? children})
+/// [_i2.CreateBookingPage]
+class CreateBookingRoute extends _i5.PageRouteInfo<void> {
+  const CreateBookingRoute({List<_i5.PageRouteInfo>? children})
     : super(CreateBookingRoute.name, initialChildren: children);
 
   static const String name = 'CreateBookingRoute';
 
-  static _i6.PageInfo page = _i6.PageInfo(
+  static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
-      return const _i3.CreateBookingPage();
+      return const _i2.CreateBookingPage();
     },
   );
 }
 
 /// generated route for
-/// [_i4.DriverPage]
-class DriverRoute extends _i6.PageRouteInfo<void> {
-  const DriverRoute({List<_i6.PageRouteInfo>? children})
-    : super(DriverRoute.name, initialChildren: children);
+/// [_i3.LandingPage]
+class LandingRoute extends _i5.PageRouteInfo<void> {
+  const LandingRoute({List<_i5.PageRouteInfo>? children})
+    : super(LandingRoute.name, initialChildren: children);
 
-  static const String name = 'DriverRoute';
+  static const String name = 'LandingRoute';
 
-  static _i6.PageInfo page = _i6.PageInfo(
+  static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
-      return const _i4.DriverPage();
+      return const _i3.LandingPage();
     },
   );
 }
 
 /// generated route for
-/// [_i5.QRScannerPage]
-class QRScannerRoute extends _i6.PageRouteInfo<void> {
-  const QRScannerRoute({List<_i6.PageRouteInfo>? children})
-    : super(QRScannerRoute.name, initialChildren: children);
+/// [_i4.MyBookingsPage]
+class MyBookingsRoute extends _i5.PageRouteInfo<void> {
+  const MyBookingsRoute({List<_i5.PageRouteInfo>? children})
+    : super(MyBookingsRoute.name, initialChildren: children);
 
-  static const String name = 'QRScannerRoute';
+  static const String name = 'MyBookingsRoute';
 
-  static _i6.PageInfo page = _i6.PageInfo(
+  static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
-      return const _i5.QRScannerPage();
+      return const _i4.MyBookingsPage();
     },
   );
 }

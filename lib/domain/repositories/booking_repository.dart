@@ -30,4 +30,10 @@ abstract class BookingRepository {
     String id,
     bool isPickedUp,
   );
+
+  /// Get my bookings by deviceId
+  /// Returns Either<String, List<BookingEntity>>
+  /// Left: Error message
+  /// Right: List of user's bookings
+  Future<Either<String, List<BookingEntity>>> getMyBookings(String deviceId);
 }

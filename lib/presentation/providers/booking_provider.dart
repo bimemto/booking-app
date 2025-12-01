@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../../domain/usecases/create_booking_usecase.dart';
+import '../../domain/usecases/get_booking_by_id_usecase.dart';
 import '../../domain/usecases/get_bookings_usecase.dart';
 import '../../domain/usecases/update_booking_status_usecase.dart';
 
@@ -11,11 +12,13 @@ import '../../domain/usecases/update_booking_status_usecase.dart';
 class BookingProvider {
   final CreateBookingUseCase _createBookingUseCase;
   final GetBookingsUseCase _getBookingsUseCase;
+  final GetBookingByIdUseCase _getBookingByIdUseCase;
   final UpdateBookingStatusUseCase _updateBookingStatusUseCase;
 
   BookingProvider(
     this._createBookingUseCase,
     this._getBookingsUseCase,
+    this._getBookingByIdUseCase,
     this._updateBookingStatusUseCase,
   );
 
@@ -100,6 +103,31 @@ class BookingProvider {
           'Booking status updated!',
           displayType: SmartToastType.last,
         );
+      },
+    );
+  }
+
+  /// Refresh/reload a booking by ID (for checking status updates)
+  Future<bool> refreshBooking(String id) async {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    final result = await _getBookingByIdUseCase(id);
+
+    return result.fold(
+      (error) {
+        isLoading.value = false;
+        errorMessage.value = error;
+        SmartDialog.showToast(
+          error,
+          displayType: SmartToastType.last,
+        );
+        return false;
+      },
+      (refreshedBooking) {
+        isLoading.value = false;
+        currentBooking.value = refreshedBooking;
+        return true;
       },
     );
   }
