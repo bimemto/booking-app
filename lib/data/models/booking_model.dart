@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/booking_entity.dart';
 
@@ -70,65 +69,6 @@ class BookingModel with _$BookingModel {
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
     );
-  }
-
-  /// Create from Firestore DocumentSnapshot
-  factory BookingModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return BookingModel(
-      id: doc.id,
-      fullName: data['fullName'] ?? '',
-      email: data['email'],
-      phoneNumber: data['phoneNumber'] ?? '',
-      numberOfBags: data['numberOfBags'] ?? 1,
-      hotelData: data['hotel'] ?? '',
-      hotelName: data['hotelName'],
-      hotelAddress: data['hotelAddress'],
-      arrivalTime: data['arrivalTime'] ?? '',
-      deviceId: data['deviceId'] ?? '',
-      isPickedUp: data['isPickedUp'] ?? false,
-      status: data['status'],
-      assignedDriver: data['assignedDriver'],
-      notes: data['notes'],
-      confirmedBy: data['confirmedBy'],
-      confirmedAt: data['confirmedAt'] != null
-          ? (data['confirmedAt'] as Timestamp).toDate()
-          : null,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
-    );
-  }
-
-  /// Convert to Firestore Map (without id)
-  Map<String, dynamic> toFirestore() {
-    final map = {
-      'fullName': fullName,
-      'phoneNumber': phoneNumber,
-      'numberOfBags': numberOfBags,
-      'hotel': hotelData,
-      'arrivalTime': arrivalTime,
-      'deviceId': deviceId,
-      'isPickedUp': isPickedUp,
-      'createdAt': createdAt != null
-          ? Timestamp.fromDate(createdAt!)
-          : FieldValue.serverTimestamp(),
-    };
-    if (email != null) {
-      map['email'] = email!;
-    }
-    if (hotelName != null) {
-      map['hotelName'] = hotelName!;
-    }
-    if (hotelAddress != null) {
-      map['hotelAddress'] = hotelAddress!;
-    }
-    if (status != null) {
-      map['status'] = status!;
-    }
-    if (notes != null) {
-      map['notes'] = notes!;
-    }
-    return map;
   }
 
   /// Convert to domain entity

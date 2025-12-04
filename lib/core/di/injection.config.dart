@@ -9,7 +9,6 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -25,7 +24,6 @@ import '../../domain/usecases/update_booking_status_usecase.dart' as _i327;
 import '../../presentation/providers/booking_provider.dart' as _i965;
 import '../networking/dio_client.dart' as _i201;
 import '../services/device_id_service.dart' as _i148;
-import 'firebase_module.dart' as _i616;
 import 'shared_preferences_module.dart' as _i110;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -40,12 +38,10 @@ extension GetItInjectableX on _i174.GetIt {
       environmentFilter,
     );
     final sharedPreferencesModule = _$SharedPreferencesModule();
-    final firebaseModule = _$FirebaseModule();
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => sharedPreferencesModule.prefs,
       preResolve: true,
     );
-    gh.lazySingleton<_i974.FirebaseFirestore>(() => firebaseModule.firestore);
     gh.lazySingleton<_i201.DioClient>(() => _i201.DioClient());
     gh.lazySingleton<_i680.HttpApiDatasource>(() => _i680.HttpApiDatasource());
     gh.lazySingleton<_i148.DeviceIdService>(
@@ -54,12 +50,12 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i766.HttpBookingRepositoryImpl(gh<_i680.HttpApiDatasource>()));
     gh.factory<_i327.UpdateBookingStatusUseCase>(
         () => _i327.UpdateBookingStatusUseCase(gh<_i377.BookingRepository>()));
+    gh.factory<_i689.GetBookingByIdUseCase>(
+        () => _i689.GetBookingByIdUseCase(gh<_i377.BookingRepository>()));
     gh.factory<_i832.CreateBookingUseCase>(
         () => _i832.CreateBookingUseCase(gh<_i377.BookingRepository>()));
     gh.factory<_i405.GetBookingsUseCase>(
         () => _i405.GetBookingsUseCase(gh<_i377.BookingRepository>()));
-    gh.factory<_i689.GetBookingByIdUseCase>(
-        () => _i689.GetBookingByIdUseCase(gh<_i377.BookingRepository>()));
     gh.lazySingleton<_i239.GetMyBookingsUseCase>(
         () => _i239.GetMyBookingsUseCase(gh<_i377.BookingRepository>()));
     gh.factory<_i965.BookingProvider>(() => _i965.BookingProvider(
@@ -73,5 +69,3 @@ extension GetItInjectableX on _i174.GetIt {
 }
 
 class _$SharedPreferencesModule extends _i110.SharedPreferencesModule {}
-
-class _$FirebaseModule extends _i616.FirebaseModule {}
