@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:label="booking_demo_app"
+        android:label="Lugger"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

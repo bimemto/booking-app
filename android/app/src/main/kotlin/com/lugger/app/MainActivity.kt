@@ -1,4 +1,4 @@
-package org.congtruyen.booking_demo_app
+package com.lugger.app
 
 import io.flutter.embedding.android.FlutterActivity
 
