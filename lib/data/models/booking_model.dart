@@ -18,7 +18,9 @@ class BookingModel with _$BookingModel {
     dynamic hotelData, // Can be String (ID) or HotelModel object
     String? hotelName, // Optional: Hotel name for display
     String? hotelAddress, // Optional: Hotel address for display
-    required String arrivalTime,
+    String? pickupLocation, // Pickup location address
+    String? pickupLocationType, // 'airport' or 'other'
+    String? arrivalTime, // Required if pickupLocationType is 'airport'
     required String deviceId, // Unique device identifier from mobile app
     @Default(false) bool isPickedUp,
     String? status,
@@ -52,7 +54,9 @@ class BookingModel with _$BookingModel {
       hotelData: hotelData,
       hotelName: hotelName,
       hotelAddress: hotelAddress,
-      arrivalTime: json['arrivalTime'] as String,
+      pickupLocation: json['pickupLocation'] as String?,
+      pickupLocationType: json['pickupLocationType'] as String?,
+      arrivalTime: json['arrivalTime'] as String?,
       deviceId: json['deviceId'] as String? ?? '',
       isPickedUp: json['isPickedUp'] as bool? ?? false,
       status: json['status'] as String?,
@@ -90,6 +94,8 @@ class BookingModel with _$BookingModel {
       hotel: hotelId,
       hotelName: hotelName,
       hotelAddress: hotelAddress,
+      pickupLocation: this.pickupLocation,
+      pickupLocationType: this.pickupLocationType,
       arrivalTime: arrivalTime,
       deviceId: deviceId,
       isPickedUp: isPickedUp,
@@ -109,6 +115,8 @@ class BookingModel with _$BookingModel {
       hotelData: entity.hotel,
       hotelName: entity.hotelName,
       hotelAddress: entity.hotelAddress,
+      pickupLocation: entity.pickupLocation,
+      pickupLocationType: entity.pickupLocationType,
       arrivalTime: entity.arrivalTime,
       deviceId: entity.deviceId,
       isPickedUp: entity.isPickedUp,

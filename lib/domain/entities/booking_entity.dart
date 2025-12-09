@@ -9,7 +9,9 @@ class BookingEntity {
   final String hotel; // Hotel ID (ObjectId) for API, or hotel name for display
   final String? hotelName; // Optional: Hotel name for display purposes
   final String? hotelAddress; // Optional: Hotel address for display purposes
-  final String arrivalTime;
+  final String? pickupLocation; // Pickup location address
+  final String? pickupLocationType; // 'airport' or 'other'
+  final String? arrivalTime; // Required if pickupLocationType is 'airport'
   final String deviceId; // Unique device identifier from mobile app
   final bool isPickedUp;
   final String? status; // Booking status: 'pending', 'confirmed', 'picked_up', etc.
@@ -24,7 +26,9 @@ class BookingEntity {
     required this.hotel,
     this.hotelName,
     this.hotelAddress,
-    required this.arrivalTime,
+    this.pickupLocation,
+    this.pickupLocationType,
+    this.arrivalTime,
     required this.deviceId,
     this.isPickedUp = false,
     this.status,
@@ -40,7 +44,9 @@ class BookingEntity {
       'bags': numberOfBags,
       'hotel': hotelName,
       'hotelAddress': hotelAddress ?? '',
-      'arrival': arrivalTime,
+      'pickupLocation': pickupLocation ?? '',
+      'pickupType': pickupLocationType ?? '',
+      'arrival': arrivalTime ?? '',
     };
   }
 
@@ -54,6 +60,8 @@ class BookingEntity {
     String? hotel,
     String? hotelName,
     String? hotelAddress,
+    String? pickupLocation,
+    String? pickupLocationType,
     String? arrivalTime,
     String? deviceId,
     bool? isPickedUp,
@@ -69,6 +77,8 @@ class BookingEntity {
       hotel: hotel ?? this.hotel,
       hotelName: hotelName ?? this.hotelName,
       hotelAddress: hotelAddress ?? this.hotelAddress,
+      pickupLocation: pickupLocation ?? this.pickupLocation,
+      pickupLocationType: pickupLocationType ?? this.pickupLocationType,
       arrivalTime: arrivalTime ?? this.arrivalTime,
       deviceId: deviceId ?? this.deviceId,
       isPickedUp: isPickedUp ?? this.isPickedUp,
@@ -90,6 +100,8 @@ class BookingEntity {
         other.hotel == hotel &&
         other.hotelName == hotelName &&
         other.hotelAddress == hotelAddress &&
+        other.pickupLocation == pickupLocation &&
+        other.pickupLocationType == pickupLocationType &&
         other.arrivalTime == arrivalTime &&
         other.deviceId == deviceId &&
         other.isPickedUp == isPickedUp &&
@@ -106,7 +118,9 @@ class BookingEntity {
         hotel.hashCode ^
         (hotelName?.hashCode ?? 0) ^
         (hotelAddress?.hashCode ?? 0) ^
-        arrivalTime.hashCode ^
+        (pickupLocation?.hashCode ?? 0) ^
+        (pickupLocationType?.hashCode ?? 0) ^
+        (arrivalTime?.hashCode ?? 0) ^
         deviceId.hashCode ^
         isPickedUp.hashCode ^
         (status?.hashCode ?? 0);
@@ -114,7 +128,7 @@ class BookingEntity {
 
   @override
   String toString() {
-    return 'BookingEntity(id: $id, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, numberOfBags: $numberOfBags, hotel: $hotel, hotelName: $hotelName, hotelAddress: $hotelAddress, arrivalTime: $arrivalTime, deviceId: $deviceId, isPickedUp: $isPickedUp, status: $status, createdAt: $createdAt)';
+    return 'BookingEntity(id: $id, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, numberOfBags: $numberOfBags, hotel: $hotel, hotelName: $hotelName, hotelAddress: $hotelAddress, pickupLocation: $pickupLocation, pickupLocationType: $pickupLocationType, arrivalTime: $arrivalTime, deviceId: $deviceId, isPickedUp: $isPickedUp, status: $status, createdAt: $createdAt)';
   }
 
   /// Get the display name for the hotel (use hotelName if available, otherwise hotel ID)

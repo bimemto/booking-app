@@ -45,9 +45,23 @@ class CreateBookingUseCase {
       return left('Hotel is required');
     }
 
-    // Validate arrival time
-    if (booking.arrivalTime.trim().isEmpty) {
-      return left('Arrival time is required');
+    // Validate pickup location type
+    if (booking.pickupLocationType == null || booking.pickupLocationType!.trim().isEmpty) {
+      return left('Pickup location type is required');
+    }
+
+    // Validate pickup location address (required only for non-airport pickup)
+    if (booking.pickupLocationType?.toLowerCase() != 'airport') {
+      if (booking.pickupLocation == null || booking.pickupLocation!.trim().isEmpty) {
+        return left('Pickup location address is required for non-airport pickup');
+      }
+    }
+
+    // Validate arrival time (required only for airport pickup)
+    if (booking.pickupLocationType?.toLowerCase() == 'airport') {
+      if (booking.arrivalTime == null || booking.arrivalTime!.trim().isEmpty) {
+        return left('Arrival time is required for Airport pickup');
+      }
     }
 
     // Validate number of bags (1-5)

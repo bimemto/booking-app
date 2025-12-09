@@ -4,6 +4,8 @@ import '../molecules/labeled_text_field.dart';
 import '../molecules/labeled_dropdown.dart';
 import '../molecules/labeled_time_picker.dart';
 import '../molecules/labeled_autocomplete.dart';
+import '../molecules/labeled_location_autocomplete.dart';
+import '../molecules/labeled_phone_field.dart';
 
 /// Organism: Booking Form
 /// Complex form component for creating bookings
@@ -13,9 +15,12 @@ class BookingForm extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController phoneController;
   final TextEditingController hotelController;
+  final TextEditingController pickupLocationController;
   final TextEditingController arrivalTimeController;
   final int? selectedBags;
+  final String? selectedPickupType;
   final Function(int?) onBagsChanged;
+  final Function(String?) onPickupTypeChanged;
   final Future<List<HotelEntity>> Function(String) onHotelSearch;
   final Function(HotelEntity?) onHotelSelected;
   final bool isReadOnly;
@@ -27,9 +32,12 @@ class BookingForm extends StatelessWidget {
     required this.emailController,
     required this.phoneController,
     required this.hotelController,
+    required this.pickupLocationController,
     required this.arrivalTimeController,
     required this.selectedBags,
+    required this.selectedPickupType,
     required this.onBagsChanged,
+    required this.onPickupTypeChanged,
     required this.onHotelSearch,
     required this.onHotelSelected,
     this.isReadOnly = false,
@@ -81,25 +89,14 @@ class BookingForm extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // Phone Number Field
-          LabeledTextField(
+          // Phone Number Field with International Support
+          LabeledPhoneField(
             label: 'Phone',
             controller: phoneController,
-            hintText: '0901234567',
             prefixIcon: Icons.phone_outlined,
-            keyboardType: TextInputType.phone,
             required: true,
             enabled: !isReadOnly,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Phone number is required';
-              }
-              final phoneRegex = RegExp(r'^0\d{9,10}$');
-              if (!phoneRegex.hasMatch(value.trim())) {
-                return 'Invalid phone number (must start with 0 and be 10-11 digits)';
-              }
-              return null;
-            },
+            initialCountryCode: 'VN', // Default to Vietnam
           ),
           const SizedBox(height: 20),
 
@@ -158,17 +155,65 @@ class BookingForm extends StatelessWidget {
             ),
           const SizedBox(height: 20),
 
-          // Arrival Time Field
-          LabeledTimePicker(
-            label: 'Arrival Time',
-            controller: arrivalTimeController,
-            hintText: 'Select time',
-            prefixIcon: Icons.access_time,
+          // Pickup Location Type Dropdown
+          LabeledDropdown<String>(
+            label: 'Pickup Location Type',
+            value: selectedPickupType,
+            items: const ['Airport', 'Other'],
+            itemLabel: (type) => type,
+            onChanged: onPickupTypeChanged,
+            hintText: 'Select',
+            prefixIcon: Icons.location_on_outlined,
             required: true,
             enabled: !isReadOnly,
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Arrival time is required';
+              if (value == null) {
+                return 'Please select pickup location type';
+              }
+              return null;
+            },
+          ),
+
+          // Pickup Location Address Field (Only show if NOT Airport)
+          if (selectedPickupType != 'Airport') ...[
+            const SizedBox(height: 20),
+            LabeledLocationAutocomplete(
+              label: 'Pickup Location Address',
+              controller: pickupLocationController,
+              hintText: 'Search for a location...',
+              prefixIcon: Icons.place_outlined,
+              required: true,
+              enabled: !isReadOnly,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Pickup location is required';
+                }
+                return null;
+              },
+              onPlaceSelected: (place) {
+                // Location selected from autocomplete
+                if (place != null) {
+                  pickupLocationController.text = place.displayName;
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+
+          // Arrival Time Field (Conditional - Required only for Airport)
+          LabeledTimePicker(
+            label: selectedPickupType == 'Airport'
+                ? 'Arrival Time'
+                : 'Arrival Time (Optional)',
+            controller: arrivalTimeController,
+            hintText: 'Select time',
+            prefixIcon: Icons.access_time,
+            required: selectedPickupType == 'Airport',
+            enabled: !isReadOnly,
+            validator: (value) {
+              if (selectedPickupType == 'Airport' &&
+                  (value == null || value.trim().isEmpty)) {
+                return 'Arrival time is required for Airport pickup';
               }
               return null;
             },

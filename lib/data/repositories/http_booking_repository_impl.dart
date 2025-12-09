@@ -74,4 +74,14 @@ class HttpBookingRepositoryImpl implements BookingRepository {
       return left('Failed to get my bookings: ${e.toString()}');
     }
   }
+
+  @override
+  Future<Either<String, BookingEntity>> cancelBooking(String id) async {
+    try {
+      final model = await _datasource.cancelBooking(id);
+      return right(model.toEntity());
+    } catch (e) {
+      return left('Failed to cancel booking: ${e.toString()}');
+    }
+  }
 }

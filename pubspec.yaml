@@ -67,6 +67,12 @@ dependencies:
   uuid: ^4.5.2
   shared_preferences: ^2.5.3
 
+  # URL Launcher for Maps
+  url_launcher: ^6.3.1
+
+  # Phone Number Formatting & Validation
+  flutter_libphonenumber: 2.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

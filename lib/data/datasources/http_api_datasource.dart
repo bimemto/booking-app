@@ -46,16 +46,28 @@ class HttpApiDatasource {
         hotelId = booking.hotelData?.toString() ?? '';
       }
 
+      // Capitalize first letter of bookingType to match API spec (Airport/Other)
+      String bookingType = booking.pickupLocationType ?? 'airport';
+      bookingType = bookingType[0].toUpperCase() + bookingType.substring(1).toLowerCase();
+
       final response = await _dio.post(
         '/booking',
         data: {
           'fullName': booking.fullName,
-          'email': booking.email,
           'phoneNumber': booking.phoneNumber,
-          'numberOfBags': booking.numberOfBags,
           'hotel': hotelId,
-          'arrivalTime': booking.arrivalTime,
+          'bookingType': bookingType, // Required: 'Airport' or 'Other'
+          'numberOfBags': booking.numberOfBags,
           'deviceId': booking.deviceId,
+          // Optional fields
+          if (booking.email != null && booking.email!.isNotEmpty)
+            'email': booking.email,
+          // Required when bookingType is 'Other'
+          if (booking.pickupLocation != null && booking.pickupLocation!.isNotEmpty)
+            'pickupLocationAddress': booking.pickupLocation,
+          // Required when bookingType is 'Airport'
+          if (booking.arrivalTime != null && booking.arrivalTime!.isNotEmpty)
+            'arrivalTime': booking.arrivalTime,
           if (booking.notes != null) 'notes': booking.notes,
         },
       );
@@ -179,6 +191,36 @@ class HttpApiDatasource {
       }
     } catch (e) {
       throw Exception('Failed to get my bookings: $e');
+    }
+  }
+
+  /// Cancel a booking (Customer - Before Confirmation)
+  /// Based on /api/booking/{id}/cancel endpoint from swagger.yaml
+  /// Only allowed for bookings with status 'pending' (not yet confirmed by admin)
+  Future<BookingModel> cancelBooking(String id) async {
+    try {
+      final response = await _dio.patch('/booking/$id/cancel');
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        return BookingModel.fromJson(response.data['data']);
+      } else {
+        throw Exception('Failed to cancel booking: ${response.data}');
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        if (e.response!.statusCode == 404) {
+          throw Exception('Booking not found');
+        } else if (e.response!.statusCode == 400) {
+          // Cannot cancel - booking already confirmed or in later stage
+          final message = e.response!.data['message'] ?? 'Cannot cancel booking';
+          throw Exception(message);
+        }
+        throw Exception('Server error: ${e.response!.data['message']}');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      throw Exception('Failed to cancel booking: $e');
     }
   }
 

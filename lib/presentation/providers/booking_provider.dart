@@ -2,6 +2,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:injectable/injectable.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../../domain/usecases/cancel_booking_usecase.dart';
 import '../../domain/usecases/create_booking_usecase.dart';
 import '../../domain/usecases/get_booking_by_id_usecase.dart';
 import '../../domain/usecases/get_bookings_usecase.dart';
@@ -14,12 +15,14 @@ class BookingProvider {
   final GetBookingsUseCase _getBookingsUseCase;
   final GetBookingByIdUseCase _getBookingByIdUseCase;
   final UpdateBookingStatusUseCase _updateBookingStatusUseCase;
+  final CancelBookingUseCase _cancelBookingUseCase;
 
   BookingProvider(
     this._createBookingUseCase,
     this._getBookingsUseCase,
     this._getBookingByIdUseCase,
     this._updateBookingStatusUseCase,
+    this._cancelBookingUseCase,
   );
 
   // Signals for reactive state
@@ -145,5 +148,34 @@ class BookingProvider {
   /// Clear error message
   void clearError() {
     errorMessage.value = null;
+  }
+
+  /// Cancel a booking (only allowed for pending status)
+  Future<bool> cancelBooking(String id) async {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    final result = await _cancelBookingUseCase(id);
+
+    return result.fold(
+      (error) {
+        isLoading.value = false;
+        errorMessage.value = error;
+        SmartDialog.showToast(
+          error,
+          displayType: SmartToastType.last,
+        );
+        return false;
+      },
+      (cancelledBooking) {
+        isLoading.value = false;
+        currentBooking.value = cancelledBooking;
+        SmartDialog.showToast(
+          'Booking cancelled successfully',
+          displayType: SmartToastType.last,
+        );
+        return true;
+      },
+    );
   }
 }

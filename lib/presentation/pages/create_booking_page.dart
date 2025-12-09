@@ -27,8 +27,10 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _hotelController = TextEditingController();
+  final _pickupLocationController = TextEditingController();
   final _arrivalTimeController = TextEditingController();
   int? _selectedBags;
+  String? _selectedPickupType = 'Airport'; // Default to 'Airport'
   String? _selectedHotelId; // Store the selected hotel ID
   String? _selectedHotelName; // Store the selected hotel name
 
@@ -42,6 +44,7 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
     _emailController.dispose();
     _phoneController.dispose();
     _hotelController.dispose();
+    _pickupLocationController.dispose();
     _arrivalTimeController.dispose();
     super.dispose();
   }
@@ -92,6 +95,9 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
 
     // Create booking entity
     final email = _emailController.text.trim();
+    final arrivalTime = _arrivalTimeController.text.trim();
+    final pickupLocation = _pickupLocationController.text.trim();
+
     final booking = BookingEntity(
       fullName: _fullNameController.text.trim(),
       email: email.isEmpty ? null : email,
@@ -99,7 +105,9 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
       numberOfBags: _selectedBags!,
       hotel: _selectedHotelId!, // Send hotel ID to API
       hotelName: _selectedHotelName, // Store hotel name for display
-      arrivalTime: _arrivalTimeController.text.trim(),
+      pickupLocation: pickupLocation.isEmpty ? null : pickupLocation, // Only send if provided
+      pickupLocationType: _selectedPickupType?.toLowerCase(), // 'airport' or 'other'
+      arrivalTime: arrivalTime.isEmpty ? null : arrivalTime,
       deviceId: deviceId, // Add device ID
     );
 
@@ -162,11 +170,26 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
                 emailController: _emailController,
                 phoneController: _phoneController,
                 hotelController: _hotelController,
+                pickupLocationController: _pickupLocationController,
                 arrivalTimeController: _arrivalTimeController,
                 selectedBags: _selectedBags,
+                selectedPickupType: _selectedPickupType,
                 onBagsChanged: (value) {
                   setState(() {
                     _selectedBags = value;
+                  });
+                },
+                onPickupTypeChanged: (value) {
+                  setState(() {
+                    _selectedPickupType = value;
+                    // Clear arrival time if switching from Airport to Other
+                    if (value != 'Airport') {
+                      _arrivalTimeController.clear();
+                    }
+                    // Clear pickup location if switching to Airport
+                    if (value == 'Airport') {
+                      _pickupLocationController.clear();
+                    }
                   });
                 },
                 onHotelSearch: _searchHotels,

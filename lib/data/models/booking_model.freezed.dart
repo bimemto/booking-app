@@ -27,7 +27,12 @@ mixin _$BookingModel {
       throw _privateConstructorUsedError; // Optional: Hotel name for display
   String? get hotelAddress =>
       throw _privateConstructorUsedError; // Optional: Hotel address for display
-  String get arrivalTime => throw _privateConstructorUsedError;
+  String? get pickupLocation =>
+      throw _privateConstructorUsedError; // Pickup location address
+  String? get pickupLocationType =>
+      throw _privateConstructorUsedError; // 'airport' or 'other'
+  String? get arrivalTime =>
+      throw _privateConstructorUsedError; // Required if pickupLocationType is 'airport'
   String get deviceId =>
       throw _privateConstructorUsedError; // Unique device identifier from mobile app
   bool get isPickedUp => throw _privateConstructorUsedError;
@@ -61,7 +66,9 @@ abstract class $BookingModelCopyWith<$Res> {
       dynamic hotelData,
       String? hotelName,
       String? hotelAddress,
-      String arrivalTime,
+      String? pickupLocation,
+      String? pickupLocationType,
+      String? arrivalTime,
       String deviceId,
       bool isPickedUp,
       String? status,
@@ -96,7 +103,9 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
     Object? hotelData = freezed,
     Object? hotelName = freezed,
     Object? hotelAddress = freezed,
-    Object? arrivalTime = null,
+    Object? pickupLocation = freezed,
+    Object? pickupLocationType = freezed,
+    Object? arrivalTime = freezed,
     Object? deviceId = null,
     Object? isPickedUp = null,
     Object? status = freezed,
@@ -140,10 +149,18 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
           ? _value.hotelAddress
           : hotelAddress // ignore: cast_nullable_to_non_nullable
               as String?,
-      arrivalTime: null == arrivalTime
+      pickupLocation: freezed == pickupLocation
+          ? _value.pickupLocation
+          : pickupLocation // ignore: cast_nullable_to_non_nullable
+              as String?,
+      pickupLocationType: freezed == pickupLocationType
+          ? _value.pickupLocationType
+          : pickupLocationType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      arrivalTime: freezed == arrivalTime
           ? _value.arrivalTime
           : arrivalTime // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       deviceId: null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
@@ -201,7 +218,9 @@ abstract class _$$BookingModelImplCopyWith<$Res>
       dynamic hotelData,
       String? hotelName,
       String? hotelAddress,
-      String arrivalTime,
+      String? pickupLocation,
+      String? pickupLocationType,
+      String? arrivalTime,
       String deviceId,
       bool isPickedUp,
       String? status,
@@ -234,7 +253,9 @@ class __$$BookingModelImplCopyWithImpl<$Res>
     Object? hotelData = freezed,
     Object? hotelName = freezed,
     Object? hotelAddress = freezed,
-    Object? arrivalTime = null,
+    Object? pickupLocation = freezed,
+    Object? pickupLocationType = freezed,
+    Object? arrivalTime = freezed,
     Object? deviceId = null,
     Object? isPickedUp = null,
     Object? status = freezed,
@@ -278,10 +299,18 @@ class __$$BookingModelImplCopyWithImpl<$Res>
           ? _value.hotelAddress
           : hotelAddress // ignore: cast_nullable_to_non_nullable
               as String?,
-      arrivalTime: null == arrivalTime
+      pickupLocation: freezed == pickupLocation
+          ? _value.pickupLocation
+          : pickupLocation // ignore: cast_nullable_to_non_nullable
+              as String?,
+      pickupLocationType: freezed == pickupLocationType
+          ? _value.pickupLocationType
+          : pickupLocationType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      arrivalTime: freezed == arrivalTime
           ? _value.arrivalTime
           : arrivalTime // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       deviceId: null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
@@ -334,7 +363,9 @@ class _$BookingModelImpl extends _BookingModel {
       this.hotelData,
       this.hotelName,
       this.hotelAddress,
-      required this.arrivalTime,
+      this.pickupLocation,
+      this.pickupLocationType,
+      this.arrivalTime,
       required this.deviceId,
       this.isPickedUp = false,
       this.status,
@@ -366,7 +397,14 @@ class _$BookingModelImpl extends _BookingModel {
   final String? hotelAddress;
 // Optional: Hotel address for display
   @override
-  final String arrivalTime;
+  final String? pickupLocation;
+// Pickup location address
+  @override
+  final String? pickupLocationType;
+// 'airport' or 'other'
+  @override
+  final String? arrivalTime;
+// Required if pickupLocationType is 'airport'
   @override
   final String deviceId;
 // Unique device identifier from mobile app
@@ -390,7 +428,7 @@ class _$BookingModelImpl extends _BookingModel {
 
   @override
   String toString() {
-    return 'BookingModel(id: $id, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, numberOfBags: $numberOfBags, hotelData: $hotelData, hotelName: $hotelName, hotelAddress: $hotelAddress, arrivalTime: $arrivalTime, deviceId: $deviceId, isPickedUp: $isPickedUp, status: $status, assignedDriver: $assignedDriver, notes: $notes, confirmedBy: $confirmedBy, confirmedAt: $confirmedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'BookingModel(id: $id, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, numberOfBags: $numberOfBags, hotelData: $hotelData, hotelName: $hotelName, hotelAddress: $hotelAddress, pickupLocation: $pickupLocation, pickupLocationType: $pickupLocationType, arrivalTime: $arrivalTime, deviceId: $deviceId, isPickedUp: $isPickedUp, status: $status, assignedDriver: $assignedDriver, notes: $notes, confirmedBy: $confirmedBy, confirmedAt: $confirmedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -411,6 +449,10 @@ class _$BookingModelImpl extends _BookingModel {
                 other.hotelName == hotelName) &&
             (identical(other.hotelAddress, hotelAddress) ||
                 other.hotelAddress == hotelAddress) &&
+            (identical(other.pickupLocation, pickupLocation) ||
+                other.pickupLocation == pickupLocation) &&
+            (identical(other.pickupLocationType, pickupLocationType) ||
+                other.pickupLocationType == pickupLocationType) &&
             (identical(other.arrivalTime, arrivalTime) ||
                 other.arrivalTime == arrivalTime) &&
             (identical(other.deviceId, deviceId) ||
@@ -432,26 +474,29 @@ class _$BookingModelImpl extends _BookingModel {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      fullName,
-      email,
-      phoneNumber,
-      numberOfBags,
-      const DeepCollectionEquality().hash(hotelData),
-      hotelName,
-      hotelAddress,
-      arrivalTime,
-      deviceId,
-      isPickedUp,
-      status,
-      const DeepCollectionEquality().hash(assignedDriver),
-      notes,
-      const DeepCollectionEquality().hash(confirmedBy),
-      confirmedAt,
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        fullName,
+        email,
+        phoneNumber,
+        numberOfBags,
+        const DeepCollectionEquality().hash(hotelData),
+        hotelName,
+        hotelAddress,
+        pickupLocation,
+        pickupLocationType,
+        arrivalTime,
+        deviceId,
+        isPickedUp,
+        status,
+        const DeepCollectionEquality().hash(assignedDriver),
+        notes,
+        const DeepCollectionEquality().hash(confirmedBy),
+        confirmedAt,
+        createdAt,
+        updatedAt
+      ]);
 
   /// Create a copy of BookingModel
   /// with the given fields replaced by the non-null parameter values.
@@ -472,7 +517,9 @@ abstract class _BookingModel extends BookingModel {
       final dynamic hotelData,
       final String? hotelName,
       final String? hotelAddress,
-      required final String arrivalTime,
+      final String? pickupLocation,
+      final String? pickupLocationType,
+      final String? arrivalTime,
       required final String deviceId,
       final bool isPickedUp,
       final String? status,
@@ -501,7 +548,11 @@ abstract class _BookingModel extends BookingModel {
   @override
   String? get hotelAddress; // Optional: Hotel address for display
   @override
-  String get arrivalTime;
+  String? get pickupLocation; // Pickup location address
+  @override
+  String? get pickupLocationType; // 'airport' or 'other'
+  @override
+  String? get arrivalTime; // Required if pickupLocationType is 'airport'
   @override
   String get deviceId; // Unique device identifier from mobile app
   @override

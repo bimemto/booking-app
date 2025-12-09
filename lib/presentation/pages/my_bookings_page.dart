@@ -289,12 +289,14 @@ class _BookingCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Arrival time
-            _buildInfoRow(
-              Icons.access_time_outlined,
-              booking.arrivalTime,
-            ),
-            const SizedBox(height: 16),
+            // Arrival time (only if provided)
+            if (booking.arrivalTime != null && booking.arrivalTime!.isNotEmpty) ...[
+              _buildInfoRow(
+                Icons.access_time_outlined,
+                booking.arrivalTime!,
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // Number of bags
             _buildInfoRow(
@@ -340,34 +342,52 @@ class _BookingCard extends StatelessWidget {
 
   /// Get status text based on booking state
   String _getStatusText(BookingEntity booking) {
-    if (booking.isPickedUp) {
-      return 'Picked Up';
-    }
-
     final status = booking.status?.toLowerCase();
+
     switch (status) {
+      case 'cancelled':
+        return 'Cancelled';
+      case 'completed':
+        return 'Completed';
+      case 'in_progress':
+        return 'In Progress';
+      case 'assigned':
+        return 'Assigned';
       case 'confirmed':
         return 'Confirmed';
       case 'pending':
         return 'Pending';
       default:
+        // Fallback for picked up status (legacy)
+        if (booking.isPickedUp) {
+          return 'Picked Up';
+        }
         return 'Pending';
     }
   }
 
   /// Get status color based on booking state
   Color _getStatusColor(BookingEntity booking) {
-    if (booking.isPickedUp) {
-      return Colors.white.withValues(alpha: 0.9);
-    }
-
     final status = booking.status?.toLowerCase();
+
     switch (status) {
+      case 'cancelled':
+        return Colors.red.withValues(alpha: 0.7);
+      case 'completed':
+        return Colors.blue.withValues(alpha: 0.8);
+      case 'in_progress':
+        return Colors.purple.withValues(alpha: 0.8);
+      case 'assigned':
+        return Colors.cyan.withValues(alpha: 0.8);
       case 'confirmed':
         return Colors.green.withValues(alpha: 0.8);
       case 'pending':
         return Colors.orange.withValues(alpha: 0.7);
       default:
+        // Fallback for picked up status (legacy)
+        if (booking.isPickedUp) {
+          return Colors.white.withValues(alpha: 0.9);
+        }
         return Colors.white.withValues(alpha: 0.6);
     }
   }
