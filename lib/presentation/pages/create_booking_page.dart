@@ -33,6 +33,7 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
   String? _selectedPickupType = 'Airport'; // Default to 'Airport'
   String? _selectedHotelId; // Store the selected hotel ID
   String? _selectedHotelName; // Store the selected hotel name
+  String? _e164PhoneNumber; // Store E.164 formatted phone number for API
 
   final _bookingProvider = getIt<BookingProvider>();
   final _httpApiDatasource = getIt<HttpApiDatasource>();
@@ -101,7 +102,7 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
     final booking = BookingEntity(
       fullName: _fullNameController.text.trim(),
       email: email.isEmpty ? null : email,
-      phoneNumber: _phoneController.text.trim(),
+      phoneNumber: _e164PhoneNumber ?? _phoneController.text.trim(), // Use E.164 format if available
       numberOfBags: _selectedBags!,
       hotel: _selectedHotelId!, // Send hotel ID to API
       hotelName: _selectedHotelName, // Store hotel name for display
@@ -194,6 +195,11 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
                 },
                 onHotelSearch: _searchHotels,
                 onHotelSelected: _onHotelSelected,
+                onPhoneChanged: (e164Number) {
+                  setState(() {
+                    _e164PhoneNumber = e164Number;
+                  });
+                },
               ),
               const SizedBox(height: 40),
 

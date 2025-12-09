@@ -4,7 +4,7 @@ class BookingEntity {
   final String? id;
   final String fullName;
   final String? email;
-  final String phoneNumber;
+  final String phoneNumber; // Phone number in E.164 format (e.g., +84901234567)
   final int numberOfBags;
   final String hotel; // Hotel ID (ObjectId) for API, or hotel name for display
   final String? hotelName; // Optional: Hotel name for display purposes

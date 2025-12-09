@@ -12,6 +12,7 @@ class LabeledPhoneField extends StatefulWidget {
   final bool enabled;
   final String? Function(String?)? validator;
   final String? initialCountryCode; // ISO 3166-1 alpha-2 code (e.g., 'VN', 'US')
+  final Function(String?)? onPhoneChanged; // Callback with E.164 formatted number
 
   const LabeledPhoneField({
     super.key,
@@ -23,6 +24,7 @@ class LabeledPhoneField extends StatefulWidget {
     this.enabled = true,
     this.validator,
     this.initialCountryCode = 'VN', // Default to Vietnam
+    this.onPhoneChanged,
   });
 
   @override
@@ -32,6 +34,7 @@ class LabeledPhoneField extends StatefulWidget {
 class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
   late String _selectedCountryCode;
   String? _formattedNumber;
+  String? _e164Number; // Store E.164 format for API submission
   bool _isInitialized = false;
   bool? _lastValidationResult;
 
@@ -57,7 +60,7 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
   String _getPhoneHint() {
     switch (_selectedCountryCode) {
       // Asia
-      case 'VN': return '901234567';
+      case 'VN': return '0901234567'; // VN mobile numbers start with 0
       case 'CN': return '131 2345 6789';
       case 'JP': return '90 1234 5678';
       case 'KR': return '10 1234 5678';
@@ -147,14 +150,23 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
       // Parse and format the number
       final result = await parse(input, region: _selectedCountryCode);
 
-      // Validate the number
-      final isValid = result['type'] != null && result['type'] != 'notANumber';
+      // Validate the number - must be a valid type AND have proper formatting
+      final type = result['type'] as String?;
+      final isValid = type != null &&
+                      type != 'notANumber' &&
+                      type != 'unknown' &&
+                      result['e164'] != null; // E164 format must exist for truly valid numbers
 
       setState(() {
         if (isValid) {
           _formattedNumber = result['international'] as String?;
+          _e164Number = result['e164'] as String?;
+          // Notify parent with E.164 formatted number
+          widget.onPhoneChanged?.call(_e164Number);
         } else {
           _formattedNumber = null;
+          _e164Number = null;
+          widget.onPhoneChanged?.call(null);
         }
         _lastValidationResult = isValid;
       });
@@ -386,7 +398,10 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
                   // Phone number validation
                   if (value != null && value.trim().isNotEmpty) {
                     if (_lastValidationResult == false) {
-                      return 'Invalid phone number for selected country';
+                      return 'Invalid phone number format. Please check the example format above.';
+                    }
+                    if (_lastValidationResult == null) {
+                      return 'Please wait while validating phone number...';
                     }
                   }
 

@@ -31,13 +31,9 @@ class CreateBookingUseCase {
       return left('Full name is required');
     }
 
-    // Validate phone number (must start with 0 and be 10-11 digits)
-    final phoneRegex = RegExp(r'^0\d{9,10}$');
+    // Validate phone number (basic check - detailed validation handled by phone input field)
     if (booking.phoneNumber.trim().isEmpty) {
       return left('Phone number is required');
-    }
-    if (!phoneRegex.hasMatch(booking.phoneNumber)) {
-      return left('Invalid phone number format (must start with 0 and be 10-11 digits)');
     }
 
     // Validate hotel

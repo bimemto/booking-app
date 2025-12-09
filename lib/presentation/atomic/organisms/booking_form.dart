@@ -23,6 +23,7 @@ class BookingForm extends StatelessWidget {
   final Function(String?) onPickupTypeChanged;
   final Future<List<HotelEntity>> Function(String) onHotelSearch;
   final Function(HotelEntity?) onHotelSelected;
+  final Function(String?)? onPhoneChanged; // Callback for E.164 formatted phone
   final bool isReadOnly;
 
   const BookingForm({
@@ -40,6 +41,7 @@ class BookingForm extends StatelessWidget {
     required this.onPickupTypeChanged,
     required this.onHotelSearch,
     required this.onHotelSelected,
+    this.onPhoneChanged,
     this.isReadOnly = false,
   });
 
@@ -97,6 +99,7 @@ class BookingForm extends StatelessWidget {
             required: true,
             enabled: !isReadOnly,
             initialCountryCode: 'VN', // Default to Vietnam
+            onPhoneChanged: onPhoneChanged, // Pass callback to parent
           ),
           const SizedBox(height: 20),
 
