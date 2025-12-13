@@ -267,16 +267,16 @@ components:
           type: string
           enum: [Airport, Other]
           example: "Airport"
-          description: "Type of booking - Airport or Other pickup location"
+          description: "Type of booking - Airport or Other pickup location. Always included in response."
         pickupLocationAddress:
           type: string
           example: "123 Main Street, District 1, Ho Chi Minh City"
-          description: "Address of the pickup location (for 'Other' booking type)"
+          description: "Address of the pickup location (required for 'Other' booking type, null for 'Airport' booking type). Always included in response."
           nullable: true
         arrivalTime:
           type: string
           example: "2024-12-25 14:30"
-          description: "Flight arrival time (for 'Airport' booking type)"
+          description: "Flight arrival time (required for 'Airport' booking type, null for 'Other' booking type). Always included in response."
           nullable: true
         numberOfBags:
           type: integer
@@ -341,6 +341,48 @@ components:
         isPickedUp:
           type: boolean
           example: true
+
+    BookingEdit:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          example: "Tran Thi C"
+          description: "Customer full name"
+        phoneNumber:
+          type: string
+          pattern: '^0\d{9,10}$'
+          example: "0987654321"
+          description: "Customer phone number (must start with 0 and be 10-11 digits)"
+        email:
+          type: string
+          format: email
+          example: "customer@example.com"
+          description: "Customer email (optional)"
+        hotel:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+          description: "Hotel ID (ObjectId reference)"
+        bookingType:
+          type: string
+          enum: [Airport, Other]
+          example: "Other"
+          description: "Type of booking - Airport or Other pickup location"
+        pickupLocationAddress:
+          type: string
+          example: "456 Le Loi Street, District 1, Ho Chi Minh City"
+          description: "Address of the pickup location (required for 'Other' booking type)"
+        arrivalTime:
+          type: string
+          example: "2024-12-25 16:30"
+          description: "Flight arrival time (required for 'Airport' booking type)"
+        numberOfBags:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 3
+          description: "Number of bags (1-5)"
 
     BookingUpdate:
       type: object
@@ -980,6 +1022,114 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/booking/{id}/edit:
+    patch:
+      tags:
+        - Booking
+      summary: Edit booking (Customer - Before Confirmation)
+      description: |
+        Edit a booking. Only allowed for bookings with status 'pending' (not yet confirmed by admin).
+        Once a booking is confirmed, assigned, or in progress, it cannot be edited through this endpoint.
+
+        **Editable fields:**
+        - fullName: Customer full name
+        - phoneNumber: Customer phone number
+        - email: Customer email (optional)
+        - hotel: Hotel ID
+        - bookingType: Airport or Other
+        - pickupLocationAddress: Required for 'Other' bookings
+        - arrivalTime: Required for 'Airport' bookings
+        - numberOfBags: Number of bags (1-5)
+
+        **Notes:**
+        - All fields are optional - only send the fields you want to update
+        - If changing phone number, customer record will be updated or created
+        - If changing hotel, the new hotel must exist and be active
+        - Full validation is performed on the combined data (existing + updates)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Booking ID
+          example: "507f1f77bcf86cd799439011"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingEdit'
+            examples:
+              updateBasicInfo:
+                summary: Update basic customer info
+                value:
+                  fullName: "Nguyen Van C"
+                  phoneNumber: "0912345678"
+                  email: "customer@example.com"
+              changeBags:
+                summary: Change number of bags
+                value:
+                  numberOfBags: 3
+              changeBookingType:
+                summary: Change from Airport to Other
+                value:
+                  bookingType: "Other"
+                  pickupLocationAddress: "123 Le Loi Street, District 1"
+              changeHotel:
+                summary: Change hotel
+                value:
+                  hotel: "507f1f77bcf86cd799439099"
+      responses:
+        '200':
+          description: Booking updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Booking updated successfully"
+                  data:
+                    $ref: '#/components/schemas/Booking'
+        '400':
+          description: Validation error or cannot edit - booking already confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Cannot edit booking. Only pending bookings can be edited."
+                  currentStatus:
+                    type: string
+                    example: "confirmed"
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Number of bags must be between 1 and 5"]
+        '404':
+          description: Booking or hotel not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/booking/{id}/cancel:
     patch:
       tags:
@@ -1103,12 +1253,21 @@ paths:
       tags:
         - Driver Booking
       summary: Get assigned bookings for driver
-      description: Get all bookings assigned to the authenticated driver with status 'assigned'. Requires driver authentication.
+      description: |
+        Get all bookings assigned to the authenticated driver with status 'assigned'.
+        Requires driver authentication.
+
+        **Response includes:**
+        - All booking details including `bookingType` and `pickupLocationAddress`
+        - Populated hotel information (name, address, zone)
+        - Customer contact information
+        - Arrival time for Airport bookings
+        - Pickup location address for Other bookings
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Assigned bookings retrieved successfully
+          description: Assigned bookings retrieved successfully. Each booking includes bookingType (Airport/Other) and pickupLocationAddress when applicable.
           content:
             application/json:
               schema:

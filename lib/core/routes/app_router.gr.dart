@@ -59,18 +59,47 @@ class BookingQRRouteArgs {
 
 /// generated route for
 /// [_i2.CreateBookingPage]
-class CreateBookingRoute extends _i5.PageRouteInfo<void> {
-  const CreateBookingRoute({List<_i5.PageRouteInfo>? children})
-    : super(CreateBookingRoute.name, initialChildren: children);
+class CreateBookingRoute extends _i5.PageRouteInfo<CreateBookingRouteArgs> {
+  CreateBookingRoute({
+    _i6.Key? key,
+    _i7.BookingEntity? existingBooking,
+    List<_i5.PageRouteInfo>? children,
+  }) : super(
+         CreateBookingRoute.name,
+         args: CreateBookingRouteArgs(
+           key: key,
+           existingBooking: existingBooking,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'CreateBookingRoute';
 
   static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
-      return const _i2.CreateBookingPage();
+      final args = data.argsAs<CreateBookingRouteArgs>(
+        orElse: () => const CreateBookingRouteArgs(),
+      );
+      return _i2.CreateBookingPage(
+        key: args.key,
+        existingBooking: args.existingBooking,
+      );
     },
   );
+}
+
+class CreateBookingRouteArgs {
+  const CreateBookingRouteArgs({this.key, this.existingBooking});
+
+  final _i6.Key? key;
+
+  final _i7.BookingEntity? existingBooking;
+
+  @override
+  String toString() {
+    return 'CreateBookingRouteArgs{key: $key, existingBooking: $existingBooking}';
+  }
 }
 
 /// generated route for

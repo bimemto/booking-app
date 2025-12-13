@@ -42,7 +42,53 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
   void initState() {
     super.initState();
     _selectedCountryCode = widget.initialCountryCode ?? 'VN';
+
+    // If controller has existing E.164 number, try to detect country
+    if (widget.controller.text.startsWith('+')) {
+      _detectCountryFromE164(widget.controller.text);
+    }
+
     _initializeLibPhoneNumber();
+
+    // Add listener to validate existing phone number after initialization
+    widget.controller.addListener(_validateExistingNumber);
+  }
+
+  void _detectCountryFromE164(String e164Number) {
+    // Simple country code detection from E.164 format
+    if (e164Number.startsWith('+84')) {
+      _selectedCountryCode = 'VN';
+    } else if (e164Number.startsWith('+1')) {
+      _selectedCountryCode = 'US'; // Could be US or CA
+    } else if (e164Number.startsWith('+86')) {
+      _selectedCountryCode = 'CN';
+    } else if (e164Number.startsWith('+81')) {
+      _selectedCountryCode = 'JP';
+    } else if (e164Number.startsWith('+82')) {
+      _selectedCountryCode = 'KR';
+    } else if (e164Number.startsWith('+65')) {
+      _selectedCountryCode = 'SG';
+    } else if (e164Number.startsWith('+66')) {
+      _selectedCountryCode = 'TH';
+    } else if (e164Number.startsWith('+44')) {
+      _selectedCountryCode = 'GB';
+    }
+    // Add more as needed, or default to initialCountryCode
+  }
+
+  void _validateExistingNumber() {
+    // Only validate once after initialization and if there's existing text
+    if (_isInitialized && widget.controller.text.isNotEmpty && _lastValidationResult == null) {
+      _formatAndValidatePhoneNumber(widget.controller.text);
+      // Remove listener after first validation
+      widget.controller.removeListener(_validateExistingNumber);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_validateExistingNumber);
+    super.dispose();
   }
 
   Future<void> _initializeLibPhoneNumber() async {
@@ -51,6 +97,25 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
       setState(() {
         _isInitialized = true;
       });
+
+      // Validate and convert existing E.164 number to local format
+      if (widget.controller.text.isNotEmpty) {
+        await _formatAndValidatePhoneNumber(widget.controller.text);
+
+        // If it's E.164 format, convert to national format for display
+        if (widget.controller.text.startsWith('+')) {
+          try {
+            final result = await parse(widget.controller.text, region: _selectedCountryCode);
+            final nationalFormat = result['national'] as String?;
+            if (nationalFormat != null) {
+              // Update controller with national format for easier editing
+              widget.controller.text = nationalFormat;
+            }
+          } catch (e) {
+            debugPrint('Error converting E.164 to national format: $e');
+          }
+        }
+      }
     } catch (e) {
       debugPrint('Error initializing libphonenumber: $e');
     }

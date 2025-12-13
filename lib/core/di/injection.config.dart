@@ -18,6 +18,7 @@ import '../../data/repositories/http_booking_repository_impl.dart' as _i766;
 import '../../domain/repositories/booking_repository.dart' as _i377;
 import '../../domain/usecases/cancel_booking_usecase.dart' as _i951;
 import '../../domain/usecases/create_booking_usecase.dart' as _i832;
+import '../../domain/usecases/edit_booking_usecase.dart' as _i856;
 import '../../domain/usecases/get_booking_by_id_usecase.dart' as _i689;
 import '../../domain/usecases/get_bookings_usecase.dart' as _i405;
 import '../../domain/usecases/get_my_bookings_usecase.dart' as _i239;
@@ -53,6 +54,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i327.UpdateBookingStatusUseCase(gh<_i377.BookingRepository>()));
     gh.factory<_i689.GetBookingByIdUseCase>(
         () => _i689.GetBookingByIdUseCase(gh<_i377.BookingRepository>()));
+    gh.factory<_i856.EditBookingUseCase>(
+        () => _i856.EditBookingUseCase(gh<_i377.BookingRepository>()));
     gh.factory<_i832.CreateBookingUseCase>(
         () => _i832.CreateBookingUseCase(gh<_i377.BookingRepository>()));
     gh.factory<_i951.CancelBookingUseCase>(
@@ -67,6 +70,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i689.GetBookingByIdUseCase>(),
           gh<_i327.UpdateBookingStatusUseCase>(),
           gh<_i951.CancelBookingUseCase>(),
+          gh<_i856.EditBookingUseCase>(),
         ));
     return this;
   }

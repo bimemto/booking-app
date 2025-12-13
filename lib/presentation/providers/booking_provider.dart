@@ -4,6 +4,7 @@ import 'package:signals_flutter/signals_flutter.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../../domain/usecases/cancel_booking_usecase.dart';
 import '../../domain/usecases/create_booking_usecase.dart';
+import '../../domain/usecases/edit_booking_usecase.dart';
 import '../../domain/usecases/get_booking_by_id_usecase.dart';
 import '../../domain/usecases/get_bookings_usecase.dart';
 import '../../domain/usecases/update_booking_status_usecase.dart';
@@ -16,6 +17,7 @@ class BookingProvider {
   final GetBookingByIdUseCase _getBookingByIdUseCase;
   final UpdateBookingStatusUseCase _updateBookingStatusUseCase;
   final CancelBookingUseCase _cancelBookingUseCase;
+  final EditBookingUseCase _editBookingUseCase;
 
   BookingProvider(
     this._createBookingUseCase,
@@ -23,6 +25,7 @@ class BookingProvider {
     this._getBookingByIdUseCase,
     this._updateBookingStatusUseCase,
     this._cancelBookingUseCase,
+    this._editBookingUseCase,
   );
 
   // Signals for reactive state
@@ -172,6 +175,35 @@ class BookingProvider {
         currentBooking.value = cancelledBooking;
         SmartDialog.showToast(
           'Booking cancelled successfully',
+          displayType: SmartToastType.last,
+        );
+        return true;
+      },
+    );
+  }
+
+  /// Edit a booking (only allowed for pending status)
+  Future<bool> editBooking(String id, BookingEntity booking) async {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    final result = await _editBookingUseCase(id, booking);
+
+    return result.fold(
+      (error) {
+        isLoading.value = false;
+        errorMessage.value = error;
+        SmartDialog.showToast(
+          error,
+          displayType: SmartToastType.last,
+        );
+        return false;
+      },
+      (updatedBooking) {
+        isLoading.value = false;
+        currentBooking.value = updatedBooking;
+        SmartDialog.showToast(
+          'Booking updated successfully',
           displayType: SmartToastType.last,
         );
         return true;

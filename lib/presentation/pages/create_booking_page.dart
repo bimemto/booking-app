@@ -15,7 +15,9 @@ import '../providers/booking_provider.dart';
 /// Screen 1: Form for creating a new booking
 @RoutePage()
 class CreateBookingPage extends StatefulWidget {
-  const CreateBookingPage({super.key});
+  final BookingEntity? existingBooking;
+
+  const CreateBookingPage({super.key, this.existingBooking});
 
   @override
   State<CreateBookingPage> createState() => _CreateBookingPageState();
@@ -38,6 +40,32 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
   final _bookingProvider = getIt<BookingProvider>();
   final _httpApiDatasource = getIt<HttpApiDatasource>();
   final _deviceIdService = getIt<DeviceIdService>();
+
+  @override
+  void initState() {
+    super.initState();
+    // If editing an existing booking, populate the form fields
+    if (widget.existingBooking != null) {
+      final booking = widget.existingBooking!;
+      _fullNameController.text = booking.fullName;
+      _emailController.text = booking.email ?? '';
+      _phoneController.text = booking.phoneNumber;
+      _hotelController.text = booking.hotelName ?? '';
+      _pickupLocationController.text = booking.pickupLocation ?? '';
+      _arrivalTimeController.text = booking.arrivalTime ?? '';
+      _selectedBags = booking.numberOfBags;
+      // Capitalize pickup type (airport -> Airport, other -> Other)
+      final pickupType = booking.pickupLocationType;
+      if (pickupType != null && pickupType.isNotEmpty) {
+        _selectedPickupType = pickupType[0].toUpperCase() + pickupType.substring(1).toLowerCase();
+      } else {
+        _selectedPickupType = 'Airport';
+      }
+      _selectedHotelId = booking.hotel;
+      _selectedHotelName = booking.hotelName;
+      _e164PhoneNumber = booking.phoneNumber;
+    }
+  }
 
   @override
   void dispose() {
@@ -100,6 +128,7 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
     final pickupLocation = _pickupLocationController.text.trim();
 
     final booking = BookingEntity(
+      id: widget.existingBooking?.id, // Include ID if editing
       fullName: _fullNameController.text.trim(),
       email: email.isEmpty ? null : email,
       phoneNumber: _e164PhoneNumber ?? _phoneController.text.trim(), // Use E.164 format if available
@@ -112,28 +141,40 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
       deviceId: deviceId, // Add device ID
     );
 
-    // Call provider to create booking
-    final success = await _bookingProvider.createBooking(booking);
+    // Call provider to create or edit booking
+    final bool success;
+    if (widget.existingBooking != null) {
+      // Edit existing booking
+      success = await _bookingProvider.editBooking(widget.existingBooking!.id!, booking);
+    } else {
+      // Create new booking
+      success = await _bookingProvider.createBooking(booking);
+    }
 
     if (success && mounted) {
-      // Navigate to QR page
-      context.router.push(
-        BookingQRRoute(booking: _bookingProvider.currentBooking.value!),
-      );
+      if (widget.existingBooking != null) {
+        // If editing, navigate back with success result
+        context.router.maybePop(true);
+      } else {
+        // If creating, navigate to QR page
+        context.router.push(
+          BookingQRRoute(booking: _bookingProvider.currentBooking.value!),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: widget.existingBooking != null, // Allow pop when editing
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
           title: const Text('Lugger'),
           backgroundColor: Colors.black,
           elevation: 0,
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: widget.existingBooking != null, // Show back button when editing
           actions: [
             IconButton(
               icon: const Icon(Icons.list_alt, color: Colors.white),
@@ -153,9 +194,9 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
               const SizedBox(height: 8),
 
               // Page Title
-              const Text(
-                'Book a Pickup',
-                style: TextStyle(
+              Text(
+                widget.existingBooking != null ? 'Edit Booking' : 'Book a Pickup',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.w400,
@@ -219,8 +260,8 @@ class _CreateBookingPageState extends State<CreateBookingPage> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
-                            'Book Now',
+                        : Text(
+                            widget.existingBooking != null ? 'Update Booking' : 'Book Now',
                             style: AppTextStyles.buttonPrimary,
                           ),
                   ),

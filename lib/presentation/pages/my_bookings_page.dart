@@ -163,7 +163,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.router.navigate(const CreateBookingRoute());
+                    context.router.navigate(CreateBookingRoute());
                   },
                   style: AppButtonStyles.primaryOutlined,
                   child: const Text(

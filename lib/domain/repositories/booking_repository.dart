@@ -42,4 +42,10 @@ abstract class BookingRepository {
   /// Left: Error message
   /// Right: Cancelled booking
   Future<Either<String, BookingEntity>> cancelBooking(String id);
+
+  /// Edit a booking (Customer - Before Confirmation)
+  /// Returns Either<String, BookingEntity>
+  /// Left: Error message
+  /// Right: Updated booking
+  Future<Either<String, BookingEntity>> editBooking(String id, BookingEntity booking);
 }

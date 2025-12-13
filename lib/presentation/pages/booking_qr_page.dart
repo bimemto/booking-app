@@ -5,6 +5,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import '../../core/di/injection.dart';
+import '../../core/routes/app_router.gr.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/map_launcher.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -47,6 +48,20 @@ class _BookingQRPageState extends State<BookingQRPage> {
       if (success && _bookingProvider.currentBooking.value != null) {
         _booking.value = _bookingProvider.currentBooking.value!;
       }
+    }
+  }
+
+  Future<void> _handleEditBooking() async {
+    if (_booking.value.id == null) return;
+
+    // Navigate to CreateBookingPage with existing booking data for editing
+    final result = await context.router.push(
+      CreateBookingRoute(existingBooking: _booking.value),
+    );
+
+    // If edit was successful, refresh the booking data
+    if (result == true && _booking.value.id != null) {
+      await _handleCheckStatus();
     }
   }
 
@@ -361,6 +376,44 @@ class _BookingQRPageState extends State<BookingQRPage> {
                                   SizedBox(width: 8),
                                   Text(
                                     'Check Status',
+                                    style: AppTextStyles.buttonPrimary,
+                                  ),
+                                ],
+                              ),
+                      ),
+                    );
+                  }),
+
+                  const SizedBox(height: 16),
+
+                  // Edit Booking Button
+                  Watch((context) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _bookingProvider.isLoading.value
+                            ? null
+                            : _handleEditBooking,
+                        style: AppButtonStyles.primaryOutlined,
+                        child: _bookingProvider.isLoading.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.edit_outlined,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Edit Booking',
                                     style: AppTextStyles.buttonPrimary,
                                   ),
                                 ],

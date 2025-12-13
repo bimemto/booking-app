@@ -224,6 +224,87 @@ class HttpApiDatasource {
     }
   }
 
+  /// Edit a booking (Customer - Before Confirmation)
+  /// Based on /api/booking/{id}/edit endpoint from swagger.yaml
+  /// Only allowed for bookings with status 'pending' (not yet confirmed by admin)
+  Future<BookingModel> editBooking(String id, BookingModel booking) async {
+    try {
+      // Extract hotel ID from hotelData (could be String or Map)
+      String? hotelId;
+      if (booking.hotelData is Map<String, dynamic>) {
+        hotelId = booking.hotelData['_id'] as String? ??
+                  booking.hotelData['id'] as String?;
+      } else if (booking.hotelData != null) {
+        hotelId = booking.hotelData?.toString();
+      }
+
+      // Capitalize first letter of bookingType to match API spec (Airport/Other)
+      String? bookingType;
+      if (booking.pickupLocationType != null) {
+        bookingType = booking.pickupLocationType![0].toUpperCase() +
+                     booking.pickupLocationType!.substring(1).toLowerCase();
+      }
+
+      // Build request data with only non-null fields
+      final Map<String, dynamic> data = {};
+
+      if (booking.fullName.isNotEmpty) {
+        data['fullName'] = booking.fullName;
+      }
+      if (booking.phoneNumber.isNotEmpty) {
+        data['phoneNumber'] = booking.phoneNumber;
+      }
+      if (booking.email != null && booking.email!.isNotEmpty) {
+        data['email'] = booking.email;
+      }
+      if (hotelId != null && hotelId.isNotEmpty) {
+        data['hotel'] = hotelId;
+      }
+      if (bookingType != null) {
+        data['bookingType'] = bookingType;
+      }
+      if (booking.pickupLocation != null && booking.pickupLocation!.isNotEmpty) {
+        data['pickupLocationAddress'] = booking.pickupLocation;
+      }
+      if (booking.arrivalTime != null && booking.arrivalTime!.isNotEmpty) {
+        data['arrivalTime'] = booking.arrivalTime;
+      }
+      if (booking.numberOfBags > 0) {
+        data['numberOfBags'] = booking.numberOfBags;
+      }
+
+      final response = await _dio.patch(
+        '/booking/$id/edit',
+        data: data,
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        return BookingModel.fromJson(response.data['data']);
+      } else {
+        throw Exception('Failed to edit booking: ${response.data}');
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        if (e.response!.statusCode == 404) {
+          throw Exception('Booking not found');
+        } else if (e.response!.statusCode == 400) {
+          // Cannot edit - booking already confirmed or validation error
+          final message = e.response!.data['message'] ?? 'Cannot edit booking';
+          final errors = e.response!.data['errors'];
+          if (errors != null && errors is List && errors.isNotEmpty) {
+            throw Exception('$message: ${errors.join(', ')}');
+          }
+          throw Exception(message);
+        }
+        throw Exception('Server error: ${e.response!.data['message']}');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      throw Exception('Failed to edit booking: $e');
+    }
+  }
+
   /// Search hotels for autocomplete
   /// Based on /api/hotels/search endpoint from swagger.yaml (Public - No Auth)
   /// Returns only active hotels for mobile app use

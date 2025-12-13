@@ -84,4 +84,23 @@ class HttpBookingRepositoryImpl implements BookingRepository {
       return left('Failed to cancel booking: ${e.toString()}');
     }
   }
+
+  @override
+  Future<Either<String, BookingEntity>> editBooking(
+    String id,
+    BookingEntity booking,
+  ) async {
+    try {
+      // Convert entity to model
+      final model = BookingModel.fromEntity(booking);
+
+      // Edit via HTTP API
+      final updatedModel = await _datasource.editBooking(id, model);
+
+      // Convert back to entity
+      return right(updatedModel.toEntity());
+    } catch (e) {
+      return left('Failed to edit booking: ${e.toString()}');
+    }
+  }
 }

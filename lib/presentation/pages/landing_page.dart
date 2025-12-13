@@ -35,7 +35,7 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   void _navigateToBooking() {
-    context.router.replace(const CreateBookingRoute());
+    context.router.replace(CreateBookingRoute());
   }
 
   @override
