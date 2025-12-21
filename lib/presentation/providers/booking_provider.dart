@@ -114,15 +114,19 @@ class BookingProvider {
   }
 
   /// Refresh/reload a booking by ID (for checking status updates)
-  Future<bool> refreshBooking(String id) async {
-    isLoading.value = true;
+  Future<bool> refreshBooking(String id, {bool? silent = false}) async {
+    if (silent == false) {
+      isLoading.value = true;  
+    }
     errorMessage.value = null;
 
     final result = await _getBookingByIdUseCase(id);
 
     return result.fold(
       (error) {
-        isLoading.value = false;
+        if (silent == false) {
+          isLoading.value = false;
+        }
         errorMessage.value = error;
         SmartDialog.showToast(
           error,
@@ -131,7 +135,9 @@ class BookingProvider {
         return false;
       },
       (refreshedBooking) {
-        isLoading.value = false;
+        if (silent == false) {
+          isLoading.value = false;
+        }
         currentBooking.value = refreshedBooking;
         return true;
       },

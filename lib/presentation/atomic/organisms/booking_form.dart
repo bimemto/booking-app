@@ -200,9 +200,8 @@ class BookingForm extends StatelessWidget {
                 }
               },
             ),
-            const SizedBox(height: 20),
           ],
-
+          const SizedBox(height: 20),
           // Arrival Time Field (Conditional - Required only for Airport)
           LabeledTimePicker(
             label: selectedPickupType == 'Airport'

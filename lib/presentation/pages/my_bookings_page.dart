@@ -31,11 +31,13 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
     _loadBookings();
   }
 
-  Future<void> _loadBookings() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  Future<void> _loadBookings({bool showLoading = true}) async {
+    if (showLoading) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       // Get device ID
@@ -44,24 +46,33 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
       // Fetch bookings
       final result = await _getMyBookingsUseCase(deviceId);
 
+      if (!mounted) return;
+
       result.fold(
         (error) {
           setState(() {
-            _errorMessage = error;
-            _isLoading = false;
+            if (showLoading) {
+              _errorMessage = error;
+              _isLoading = false;
+            }
           });
         },
         (bookings) {
           setState(() {
             _bookings = bookings;
-            _isLoading = false;
+            if (showLoading) {
+              _isLoading = false;
+            }
           });
         },
       );
     } catch (e) {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = 'Failed to load bookings: $e';
-        _isLoading = false;
+        if (showLoading) {
+          _errorMessage = 'Failed to load bookings: $e';
+          _isLoading = false;
+        }
       });
     }
   }
@@ -191,9 +202,11 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
             padding: const EdgeInsets.only(bottom: 16),
             child: _BookingCard(
               booking: booking,
-              onTap: () {
+              onTap: () async {
                 // Navigate to booking QR page
-                context.router.push(BookingQRRoute(booking: booking));
+                await context.router.push(BookingQRRoute(booking: booking));
+                // Refresh silently when returning
+                _loadBookings(showLoading: false);
               },
             ),
           );

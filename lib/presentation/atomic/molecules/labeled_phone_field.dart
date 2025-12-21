@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 
@@ -27,6 +28,69 @@ class LabeledPhoneField extends StatefulWidget {
     this.onPhoneChanged,
   });
 
+  static const List<Map<String, String>> countryList = [
+    {'code': 'VN', 'flag': '🇻🇳', 'dial': '+84'},
+    {'code': 'CN', 'flag': '🇨🇳', 'dial': '+86'},
+    {'code': 'JP', 'flag': '🇯🇵', 'dial': '+81'},
+    {'code': 'KR', 'flag': '🇰🇷', 'dial': '+82'},
+    {'code': 'SG', 'flag': '🇸🇬', 'dial': '+65'},
+    {'code': 'TH', 'flag': '🇹🇭', 'dial': '+66'},
+    {'code': 'MY', 'flag': '🇲🇾', 'dial': '+60'},
+    {'code': 'ID', 'flag': '🇮🇩', 'dial': '+62'},
+    {'code': 'PH', 'flag': '🇵🇭', 'dial': '+63'},
+    {'code': 'IN', 'flag': '🇮🇳', 'dial': '+91'},
+    {'code': 'HK', 'flag': '🇭🇰', 'dial': '+852'},
+    {'code': 'TW', 'flag': '🇹🇼', 'dial': '+886'},
+    {'code': 'BD', 'flag': '🇧🇩', 'dial': '+880'},
+    {'code': 'PK', 'flag': '🇵🇰', 'dial': '+92'},
+    {'code': 'LK', 'flag': '🇱🇰', 'dial': '+94'},
+    {'code': 'MM', 'flag': '🇲🇲', 'dial': '+95'},
+    {'code': 'KH', 'flag': '🇰🇭', 'dial': '+855'},
+    {'code': 'LA', 'flag': '🇱🇦', 'dial': '+856'},
+    {'code': 'MN', 'flag': '🇲🇳', 'dial': '+976'},
+    {'code': 'US', 'flag': '🇺🇸', 'dial': '+1'},
+    {'code': 'CA', 'flag': '🇨🇦', 'dial': '+1'},
+    {'code': 'MX', 'flag': '🇲🇽', 'dial': '+52'},
+    {'code': 'BR', 'flag': '🇧🇷', 'dial': '+55'},
+    {'code': 'AR', 'flag': '🇦🇷', 'dial': '+54'},
+    {'code': 'CL', 'flag': '🇨🇱', 'dial': '+56'},
+    {'code': 'CO', 'flag': '🇨🇴', 'dial': '+57'},
+    {'code': 'PE', 'flag': '🇵🇪', 'dial': '+51'},
+    {'code': 'GB', 'flag': '🇬🇧', 'dial': '+44'},
+    {'code': 'FR', 'flag': '🇫🇷', 'dial': '+33'},
+    {'code': 'DE', 'flag': '🇩🇪', 'dial': '+49'},
+    {'code': 'IT', 'flag': '🇮🇹', 'dial': '+39'},
+    {'code': 'ES', 'flag': '🇪🇸', 'dial': '+34'},
+    {'code': 'NL', 'flag': '🇳🇱', 'dial': '+31'},
+    {'code': 'BE', 'flag': '🇧🇪', 'dial': '+32'},
+    {'code': 'CH', 'flag': '🇨🇭', 'dial': '+41'},
+    {'code': 'AT', 'flag': '🇦🇹', 'dial': '+43'},
+    {'code': 'SE', 'flag': '🇸🇪', 'dial': '+46'},
+    {'code': 'NO', 'flag': '🇳🇴', 'dial': '+47'},
+    {'code': 'DK', 'flag': '🇩🇰', 'dial': '+45'},
+    {'code': 'FI', 'flag': '🇫🇮', 'dial': '+358'},
+    {'code': 'PL', 'flag': '🇵🇱', 'dial': '+48'},
+    {'code': 'RU', 'flag': '🇷🇺', 'dial': '+7'},
+    {'code': 'TR', 'flag': '🇹🇷', 'dial': '+90'},
+    {'code': 'GR', 'flag': '🇬🇷', 'dial': '+30'},
+    {'code': 'PT', 'flag': '🇵🇹', 'dial': '+351'},
+    {'code': 'CZ', 'flag': '🇨🇿', 'dial': '+420'},
+    {'code': 'HU', 'flag': '🇭🇺', 'dial': '+36'},
+    {'code': 'RO', 'flag': '🇷🇴', 'dial': '+40'},
+    {'code': 'UA', 'flag': '🇺🇦', 'dial': '+380'},
+    {'code': 'AU', 'flag': '🇦🇺', 'dial': '+61'},
+    {'code': 'NZ', 'flag': '🇳🇿', 'dial': '+64'},
+    {'code': 'AE', 'flag': '🇦🇪', 'dial': '+971'},
+    {'code': 'SA', 'flag': '🇸🇦', 'dial': '+966'},
+    {'code': 'IL', 'flag': '🇮🇱', 'dial': '+972'},
+    {'code': 'QA', 'flag': '🇶🇦', 'dial': '+974'},
+    {'code': 'KW', 'flag': '🇰🇼', 'dial': '+965'},
+    {'code': 'ZA', 'flag': '🇿🇦', 'dial': '+27'},
+    {'code': 'EG', 'flag': '🇪🇬', 'dial': '+20'},
+    {'code': 'NG', 'flag': '🇳🇬', 'dial': '+234'},
+    {'code': 'KE', 'flag': '🇰🇪', 'dial': '+254'},
+  ];
+
   @override
   State<LabeledPhoneField> createState() => _LabeledPhoneFieldState();
 }
@@ -37,6 +101,7 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
   String? _e164Number; // Store E.164 format for API submission
   bool _isInitialized = false;
   bool? _lastValidationResult;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -88,6 +153,7 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
   @override
   void dispose() {
     widget.controller.removeListener(_validateExistingNumber);
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -284,103 +350,120 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedCountryCode,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  dropdownColor: Colors.grey[900],
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+                child: DropdownButton2<String>(
+                  isExpanded: true,
+                  hint: Text(
+                    'Select Country',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                  items: const [
-                    // Asia
-                    DropdownMenuItem(value: 'VN', child: Text('🇻🇳 +84')),
-                    DropdownMenuItem(value: 'CN', child: Text('🇨🇳 +86')),
-                    DropdownMenuItem(value: 'JP', child: Text('🇯🇵 +81')),
-                    DropdownMenuItem(value: 'KR', child: Text('🇰🇷 +82')),
-                    DropdownMenuItem(value: 'SG', child: Text('🇸🇬 +65')),
-                    DropdownMenuItem(value: 'TH', child: Text('🇹🇭 +66')),
-                    DropdownMenuItem(value: 'MY', child: Text('🇲🇾 +60')),
-                    DropdownMenuItem(value: 'ID', child: Text('🇮🇩 +62')),
-                    DropdownMenuItem(value: 'PH', child: Text('🇵🇭 +63')),
-                    DropdownMenuItem(value: 'IN', child: Text('🇮🇳 +91')),
-                    DropdownMenuItem(value: 'HK', child: Text('🇭🇰 +852')),
-                    DropdownMenuItem(value: 'TW', child: Text('🇹🇼 +886')),
-                    DropdownMenuItem(value: 'BD', child: Text('🇧🇩 +880')),
-                    DropdownMenuItem(value: 'PK', child: Text('🇵🇰 +92')),
-                    DropdownMenuItem(value: 'LK', child: Text('🇱🇰 +94')),
-                    DropdownMenuItem(value: 'MM', child: Text('🇲🇲 +95')),
-                    DropdownMenuItem(value: 'KH', child: Text('🇰🇭 +855')),
-                    DropdownMenuItem(value: 'LA', child: Text('🇱🇦 +856')),
-                    DropdownMenuItem(value: 'MN', child: Text('🇲🇳 +976')),
-
-                    // North America
-                    DropdownMenuItem(value: 'US', child: Text('🇺🇸 +1')),
-                    DropdownMenuItem(value: 'CA', child: Text('🇨🇦 +1')),
-                    DropdownMenuItem(value: 'MX', child: Text('🇲🇽 +52')),
-
-                    // South America
-                    DropdownMenuItem(value: 'BR', child: Text('🇧🇷 +55')),
-                    DropdownMenuItem(value: 'AR', child: Text('🇦🇷 +54')),
-                    DropdownMenuItem(value: 'CL', child: Text('🇨🇱 +56')),
-                    DropdownMenuItem(value: 'CO', child: Text('🇨🇴 +57')),
-                    DropdownMenuItem(value: 'PE', child: Text('🇵🇪 +51')),
-
-                    // Europe
-                    DropdownMenuItem(value: 'GB', child: Text('🇬🇧 +44')),
-                    DropdownMenuItem(value: 'FR', child: Text('🇫🇷 +33')),
-                    DropdownMenuItem(value: 'DE', child: Text('🇩🇪 +49')),
-                    DropdownMenuItem(value: 'IT', child: Text('🇮🇹 +39')),
-                    DropdownMenuItem(value: 'ES', child: Text('🇪🇸 +34')),
-                    DropdownMenuItem(value: 'NL', child: Text('🇳🇱 +31')),
-                    DropdownMenuItem(value: 'BE', child: Text('🇧🇪 +32')),
-                    DropdownMenuItem(value: 'CH', child: Text('🇨🇭 +41')),
-                    DropdownMenuItem(value: 'AT', child: Text('🇦🇹 +43')),
-                    DropdownMenuItem(value: 'SE', child: Text('🇸🇪 +46')),
-                    DropdownMenuItem(value: 'NO', child: Text('🇳🇴 +47')),
-                    DropdownMenuItem(value: 'DK', child: Text('🇩🇰 +45')),
-                    DropdownMenuItem(value: 'FI', child: Text('🇫🇮 +358')),
-                    DropdownMenuItem(value: 'PL', child: Text('🇵🇱 +48')),
-                    DropdownMenuItem(value: 'RU', child: Text('🇷🇺 +7')),
-                    DropdownMenuItem(value: 'TR', child: Text('🇹🇷 +90')),
-                    DropdownMenuItem(value: 'GR', child: Text('🇬🇷 +30')),
-                    DropdownMenuItem(value: 'PT', child: Text('🇵🇹 +351')),
-                    DropdownMenuItem(value: 'CZ', child: Text('🇨🇿 +420')),
-                    DropdownMenuItem(value: 'HU', child: Text('🇭🇺 +36')),
-                    DropdownMenuItem(value: 'RO', child: Text('🇷🇴 +40')),
-                    DropdownMenuItem(value: 'UA', child: Text('🇺🇦 +380')),
-
-                    // Oceania
-                    DropdownMenuItem(value: 'AU', child: Text('🇦🇺 +61')),
-                    DropdownMenuItem(value: 'NZ', child: Text('🇳🇿 +64')),
-
-                    // Middle East
-                    DropdownMenuItem(value: 'AE', child: Text('🇦🇪 +971')),
-                    DropdownMenuItem(value: 'SA', child: Text('🇸🇦 +966')),
-                    DropdownMenuItem(value: 'IL', child: Text('🇮🇱 +972')),
-                    DropdownMenuItem(value: 'QA', child: Text('🇶🇦 +974')),
-                    DropdownMenuItem(value: 'KW', child: Text('🇰🇼 +965')),
-
-                    // Africa
-                    DropdownMenuItem(value: 'ZA', child: Text('🇿🇦 +27')),
-                    DropdownMenuItem(value: 'EG', child: Text('🇪🇬 +20')),
-                    DropdownMenuItem(value: 'NG', child: Text('🇳🇬 +234')),
-                    DropdownMenuItem(value: 'KE', child: Text('🇰🇪 +254')),
-                  ],
-                  onChanged: widget.enabled
-                      ? (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedCountryCode = value;
-                            });
-                            // Re-format and validate with new country code
-                            if (widget.controller.text.isNotEmpty) {
-                              _formatAndValidatePhoneNumber(widget.controller.text);
-                            }
-                          }
-                        }
-                      : null,
+                  items: LabeledPhoneField.countryList
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item['code'],
+                            child: Text(
+                              '${item['flag']} ${item['dial']}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                  value: _selectedCountryCode,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedCountryCode = value;
+                      });
+                      // Re-format and validate with new country code
+                      if (widget.controller.text.isNotEmpty) {
+                        _formatAndValidatePhoneNumber(widget.controller.text);
+                      }
+                    }
+                  },
+                  buttonStyleData: const ButtonStyleData(
+                    height: 56,
+                    width: 120,
+                    padding: EdgeInsets.only(left: 8, right: 8),
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white70,
+                    ),
+                    iconSize: 24,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 400,
+                    width: 300, // Make dropdown wider for search visibility
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey[900],
+                    ),
+                    scrollbarTheme: ScrollbarThemeData(
+                      radius: const Radius.circular(40),
+                      thickness: MaterialStateProperty.all(6),
+                      thumbVisibility: MaterialStateProperty.all(true),
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 48,
+                    padding: EdgeInsets.only(left: 14, right: 14),
+                  ),
+                  dropdownSearchData: DropdownSearchData(
+                    searchController: _searchController,
+                    searchInnerWidgetHeight: 50,
+                    searchInnerWidget: Container(
+                      height: 50,
+                      padding: const EdgeInsets.only(
+                        top: 8,
+                        bottom: 4,
+                        right: 8,
+                        left: 8,
+                      ),
+                      child: TextFormField(
+                        expands: true,
+                        maxLines: null,
+                        controller: _searchController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          hintText: 'Search country code...',
+                          hintStyle: const TextStyle(fontSize: 12, color: Colors.white38),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white24),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white24),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white70),
+                          ),
+                        ),
+                      ),
+                    ),
+                    searchMatchFn: (item, searchValue) {
+                      final country = LabeledPhoneField.countryList.firstWhere(
+                        (c) => c['code'] == item.value,
+                        orElse: () => {'code': '', 'dial': '', 'flag': ''},
+                      );
+                      
+                      final searchLower = searchValue.toLowerCase();
+                      final code = country['code']?.toLowerCase() ?? '';
+                      final dial = country['dial']?.toLowerCase() ?? '';
+                      
+                      return code.contains(searchLower) || dial.contains(searchLower);
+                    },
+                  ),
                 ),
               ),
             ),

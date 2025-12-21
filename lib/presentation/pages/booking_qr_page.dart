@@ -39,10 +39,11 @@ class _BookingQRPageState extends State<BookingQRPage> {
     _bookingProvider.setCurrentBooking(widget.booking);
   }
 
-  Future<void> _handleCheckStatus() async {
+  Future<void> _handleCheckStatus({bool? silent = false}) async {
     if (_booking.value.id != null) {
       // Refresh booking from API to check if status changed
-      final success = await _bookingProvider.refreshBooking(_booking.value.id!);
+      final success = await _bookingProvider.refreshBooking(_booking.value.id!,
+          silent: silent);
 
       // Update local state if refresh was successful
       if (success && _bookingProvider.currentBooking.value != null) {
@@ -59,9 +60,9 @@ class _BookingQRPageState extends State<BookingQRPage> {
       CreateBookingRoute(existingBooking: _booking.value),
     );
 
-    // If edit was successful, refresh the booking data
-    if (result == true && _booking.value.id != null) {
-      await _handleCheckStatus();
+    // If edit was successful, update local state from provider
+    if (result == true && _bookingProvider.currentBooking.value != null) {
+      _handleCheckStatus(silent: true);
     }
   }
 
@@ -182,24 +183,33 @@ class _BookingQRPageState extends State<BookingQRPage> {
                 const SizedBox(height: 24),
 
                 _buildDetailRow('Name', currentBooking.fullName),
-                if (currentBooking.email != null && currentBooking.email!.isNotEmpty)
+                if (currentBooking.email != null &&
+                    currentBooking.email!.isNotEmpty)
                   _buildDetailRow('Email', currentBooking.email!),
                 _buildDetailRow('Phone', currentBooking.phoneNumber),
-                _buildDetailRow('Number of Bags', '${currentBooking.numberOfBags}'),
+                _buildDetailRow(
+                    'Number of Bags', '${currentBooking.numberOfBags}'),
                 _buildDetailRow('Hotel', currentBooking.hotelDisplayName),
-                if (currentBooking.hotelAddress != null && currentBooking.hotelAddress!.isNotEmpty)
-                  _buildDetailRow('Hotel Address', currentBooking.hotelAddress!),
+                if (currentBooking.hotelAddress != null &&
+                    currentBooking.hotelAddress!.isNotEmpty)
+                  _buildDetailRow(
+                      'Hotel Address', currentBooking.hotelAddress!),
 
                 // Pickup Location with Maps button
-                if (currentBooking.pickupLocation != null && currentBooking.pickupLocation!.isNotEmpty)
-                  _buildLocationRow('Pickup Location', currentBooking.pickupLocation!),
+                if (currentBooking.pickupLocation != null &&
+                    currentBooking.pickupLocation!.isNotEmpty)
+                  _buildLocationRow(
+                      'Pickup Location', currentBooking.pickupLocation!),
 
                 // Pickup Type
-                if (currentBooking.pickupLocationType != null && currentBooking.pickupLocationType!.isNotEmpty)
-                  _buildDetailRow('Pickup Type', currentBooking.pickupLocationType!.toUpperCase()),
+                if (currentBooking.pickupLocationType != null &&
+                    currentBooking.pickupLocationType!.isNotEmpty)
+                  _buildDetailRow('Pickup Type',
+                      currentBooking.pickupLocationType!.toUpperCase()),
 
                 // Arrival Time (only shown if provided)
-                if (currentBooking.arrivalTime != null && currentBooking.arrivalTime!.isNotEmpty)
+                if (currentBooking.arrivalTime != null &&
+                    currentBooking.arrivalTime!.isNotEmpty)
                   _buildDetailRow('Arrival Time', currentBooking.arrivalTime!),
 
                 const SizedBox(height: 40),
@@ -304,47 +314,48 @@ class _BookingQRPageState extends State<BookingQRPage> {
                   const SizedBox(height: 24),
 
                   // Status Badge
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade800,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.pending_actions,
-                            color: Colors.white,
-                            size: 48,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            currentBooking.status?.toUpperCase() ?? 'PENDING',
-                            style: const TextStyle(
+                  if (!currentBooking.isPickedUp || currentBooking.status?.toLowerCase() != 'completed')
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade800,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.pending_actions,
                               color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.2,
+                              size: 48,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'QR code will be available once confirmed',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w300,
+                            const SizedBox(height: 12),
+                            Text(
+                              currentBooking.status?.toUpperCase() ?? 'PENDING',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            const Text(
+                              'QR code will be available once confirmed',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   const SizedBox(height: 24),
 
@@ -559,7 +570,8 @@ class _BookingQRPageState extends State<BookingQRPage> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.white24, width: 1),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
