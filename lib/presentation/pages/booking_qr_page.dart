@@ -147,7 +147,7 @@ class _BookingQRPageState extends State<BookingQRPage> {
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -157,7 +157,7 @@ class _BookingQRPageState extends State<BookingQRPage> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            'Status: Picked Up',
+                            currentBooking.isCompleted ? 'Completed' : 'Picked Up',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
@@ -302,19 +302,19 @@ class _BookingQRPageState extends State<BookingQRPage> {
                     ),
                   ),
                 ] else ...[
-                  // Show status message when not confirmed
-                  const Text(
-                    'Booking Status',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
                   // Status Badge
-                  if (!currentBooking.isPickedUp || currentBooking.status?.toLowerCase() != 'completed')
+                  if (currentBooking.status?.toLowerCase() == 'pending')
+                    // Show status message when not confirmed
+                    ...[
+                    const Text(
+                      'Booking Status',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -356,11 +356,15 @@ class _BookingQRPageState extends State<BookingQRPage> {
                         ),
                       ),
                     ),
+                  ],
 
                   const SizedBox(height: 24),
 
                   // Check Status Button
                   Watch((context) {
+                    if(currentBooking.isCompleted) {
+                      return const SizedBox.shrink();
+                    }
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -399,6 +403,9 @@ class _BookingQRPageState extends State<BookingQRPage> {
 
                   // Edit Booking Button
                   Watch((context) {
+                    if(currentBooking.isConfirmed || currentBooking.isCompleted || currentBooking.isPickedUp) {
+                      return const SizedBox.shrink();
+                    }
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -437,6 +444,9 @@ class _BookingQRPageState extends State<BookingQRPage> {
 
                   // Cancel Booking Button
                   Watch((context) {
+                    if(currentBooking.isConfirmed || currentBooking.isCompleted || currentBooking.isPickedUp) {
+                      return const SizedBox.shrink();
+                    }
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

@@ -138,4 +138,7 @@ class BookingEntity {
   bool get isConfirmed =>
       status?.toLowerCase() == 'confirmed' ||
       status?.toLowerCase() == 'assigned';
+
+  bool get isCompleted =>
+      status?.toLowerCase() == 'completed';
 }
