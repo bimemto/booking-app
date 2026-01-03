@@ -1,6 +1,7 @@
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:injectable/injectable.dart';
 import 'package:signals_flutter/signals_flutter.dart';
+import '../../core/services/connectivity_service.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../../domain/usecases/cancel_booking_usecase.dart';
 import '../../domain/usecases/create_booking_usecase.dart';
@@ -18,6 +19,7 @@ class BookingProvider {
   final UpdateBookingStatusUseCase _updateBookingStatusUseCase;
   final CancelBookingUseCase _cancelBookingUseCase;
   final EditBookingUseCase _editBookingUseCase;
+  final ConnectivityService _connectivityService;
 
   BookingProvider(
     this._createBookingUseCase,
@@ -26,6 +28,7 @@ class BookingProvider {
     this._updateBookingStatusUseCase,
     this._cancelBookingUseCase,
     this._editBookingUseCase,
+    this._connectivityService,
   );
 
   // Signals for reactive state
@@ -36,6 +39,17 @@ class BookingProvider {
 
   /// Create a new booking
   Future<bool> createBooking(BookingEntity booking) async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      errorMessage.value = 'No internet connection. Please check your network settings and try again.';
+      SmartDialog.showToast(
+        'No internet connection. Please check your network settings and try again.',
+        displayType: SmartToastType.last,
+      );
+      return false;
+    }
+
     isLoading.value = true;
     errorMessage.value = null;
 
@@ -65,6 +79,17 @@ class BookingProvider {
 
   /// Get all bookings
   Future<void> getBookings() async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      errorMessage.value = 'No internet connection. Please check your network settings and try again.';
+      SmartDialog.showToast(
+        'No internet connection. Please check your network settings and try again.',
+        displayType: SmartToastType.last,
+      );
+      return;
+    }
+
     isLoading.value = true;
     errorMessage.value = null;
 
@@ -88,6 +113,17 @@ class BookingProvider {
 
   /// Update booking status (mark as picked up)
   Future<void> updateBookingStatus(String id, bool isPickedUp) async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      errorMessage.value = 'No internet connection. Please check your network settings and try again.';
+      SmartDialog.showToast(
+        'No internet connection. Please check your network settings and try again.',
+        displayType: SmartToastType.last,
+      );
+      return;
+    }
+
     isLoading.value = true;
     errorMessage.value = null;
 
@@ -115,8 +151,21 @@ class BookingProvider {
 
   /// Refresh/reload a booking by ID (for checking status updates)
   Future<bool> refreshBooking(String id, {bool? silent = false}) async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      if (silent == false) {
+        errorMessage.value = 'No internet connection. Please check your network settings and try again.';
+        SmartDialog.showToast(
+          'No internet connection. Please check your network settings and try again.',
+          displayType: SmartToastType.last,
+        );
+      }
+      return false;
+    }
+
     if (silent == false) {
-      isLoading.value = true;  
+      isLoading.value = true;
     }
     errorMessage.value = null;
 
@@ -161,6 +210,17 @@ class BookingProvider {
 
   /// Cancel a booking (only allowed for pending status)
   Future<bool> cancelBooking(String id) async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      errorMessage.value = 'No internet connection. Please check your network settings and try again.';
+      SmartDialog.showToast(
+        'No internet connection. Please check your network settings and try again.',
+        displayType: SmartToastType.last,
+      );
+      return false;
+    }
+
     isLoading.value = true;
     errorMessage.value = null;
 
@@ -190,6 +250,17 @@ class BookingProvider {
 
   /// Edit a booking (only allowed for pending status)
   Future<bool> editBooking(String id, BookingEntity booking) async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      errorMessage.value = 'No internet connection. Please check your network settings and try again.';
+      SmartDialog.showToast(
+        'No internet connection. Please check your network settings and try again.',
+        displayType: SmartToastType.last,
+      );
+      return false;
+    }
+
     isLoading.value = true;
     errorMessage.value = null;
 

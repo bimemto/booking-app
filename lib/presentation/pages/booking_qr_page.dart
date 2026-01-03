@@ -30,6 +30,10 @@ class _BookingQRPageState extends State<BookingQRPage> {
   final _bookingProvider = getIt<BookingProvider>();
   late final Signal<BookingEntity> _booking;
 
+  // Separate loading states for each action
+  final _isCheckingStatus = signal<bool>(false);
+  final _isCancelling = signal<bool>(false);
+
   @override
   void initState() {
     super.initState();
@@ -41,9 +45,17 @@ class _BookingQRPageState extends State<BookingQRPage> {
 
   Future<void> _handleCheckStatus({bool? silent = false}) async {
     if (_booking.value.id != null) {
+      if (silent == false) {
+        _isCheckingStatus.value = true;
+      }
+
       // Refresh booking from API to check if status changed
       final success = await _bookingProvider.refreshBooking(_booking.value.id!,
           silent: silent);
+
+      if (silent == false) {
+        _isCheckingStatus.value = false;
+      }
 
       // Update local state if refresh was successful
       if (success && _bookingProvider.currentBooking.value != null) {
@@ -106,7 +118,9 @@ class _BookingQRPageState extends State<BookingQRPage> {
     );
 
     if (shouldCancel == true) {
+      _isCancelling.value = true;
       final success = await _bookingProvider.cancelBooking(_booking.value.id!);
+      _isCancelling.value = false;
 
       // Update local state if cancellation was successful
       if (success && _bookingProvider.currentBooking.value != null) {
@@ -368,11 +382,11 @@ class _BookingQRPageState extends State<BookingQRPage> {
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _bookingProvider.isLoading.value
+                        onPressed: _isCheckingStatus.value
                             ? null
                             : _handleCheckStatus,
                         style: AppButtonStyles.primaryOutlined,
-                        child: _bookingProvider.isLoading.value
+                        child: _isCheckingStatus.value
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
@@ -402,43 +416,28 @@ class _BookingQRPageState extends State<BookingQRPage> {
                   const SizedBox(height: 16),
 
                   // Edit Booking Button
-                  Watch((context) {
-                    if(currentBooking.isConfirmed || currentBooking.isCompleted || currentBooking.isPickedUp) {
-                      return const SizedBox.shrink();
-                    }
-                    return SizedBox(
+                  if(!(currentBooking.isConfirmed || currentBooking.isCompleted || currentBooking.isPickedUp))
+                    SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _bookingProvider.isLoading.value
-                            ? null
-                            : _handleEditBooking,
+                        onPressed: _handleEditBooking,
                         style: AppButtonStyles.primaryOutlined,
-                        child: _bookingProvider.isLoading.value
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    size: 20,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Edit Booking',
-                                    style: AppTextStyles.buttonPrimary,
-                                  ),
-                                ],
-                              ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.edit_outlined,
+                              size: 20,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Edit Booking',
+                              style: AppTextStyles.buttonPrimary,
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  }),
+                    ),
 
                   const SizedBox(height: 16),
 
@@ -450,7 +449,7 @@ class _BookingQRPageState extends State<BookingQRPage> {
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _bookingProvider.isLoading.value
+                        onPressed: _isCancelling.value
                             ? null
                             : _handleCancelBooking,
                         style: ElevatedButton.styleFrom(
@@ -465,7 +464,7 @@ class _BookingQRPageState extends State<BookingQRPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: _bookingProvider.isLoading.value
+                        child: _isCancelling.value
                             ? SizedBox(
                                 height: 20,
                                 width: 20,

@@ -555,7 +555,6 @@ class _LabeledPhoneFieldState extends State<LabeledPhoneField> {
 
                   return null;
                 },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
             ),
           ],

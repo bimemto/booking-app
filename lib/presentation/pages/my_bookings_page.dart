@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../core/routes/app_router.gr.dart';
+import '../../core/services/connectivity_service.dart';
 import '../../core/services/device_id_service.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -20,6 +21,7 @@ class MyBookingsPage extends StatefulWidget {
 class _MyBookingsPageState extends State<MyBookingsPage> {
   final _deviceIdService = getIt<DeviceIdService>();
   final _getMyBookingsUseCase = getIt<GetMyBookingsUseCase>();
+  final _connectivityService = getIt<ConnectivityService>();
 
   List<BookingEntity> _bookings = [];
   bool _isLoading = true;
@@ -32,6 +34,19 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
   }
 
   Future<void> _loadBookings({bool showLoading = true}) async {
+    // Check internet connection first
+    final hasConnection = await _connectivityService.hasInternetConnection();
+    if (!hasConnection) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'No internet connection. Please check your network settings and try again.';
+        if (showLoading) {
+          _isLoading = false;
+        }
+      });
+      return;
+    }
+
     if (showLoading) {
       setState(() {
         _isLoading = true;
@@ -276,8 +291,8 @@ class _BookingCard extends StatelessWidget {
                     _getStatusText(booking),
                     style: TextStyle(
                       color: _getStatusColor(booking),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w300,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
                     ),
                   ),

@@ -25,6 +25,7 @@ import '../../domain/usecases/get_my_bookings_usecase.dart' as _i239;
 import '../../domain/usecases/update_booking_status_usecase.dart' as _i327;
 import '../../presentation/providers/booking_provider.dart' as _i965;
 import '../networking/dio_client.dart' as _i201;
+import '../services/connectivity_service.dart' as _i47;
 import '../services/device_id_service.dart' as _i148;
 import 'shared_preferences_module.dart' as _i110;
 
@@ -45,6 +46,8 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.lazySingleton<_i201.DioClient>(() => _i201.DioClient());
+    gh.lazySingleton<_i47.ConnectivityService>(
+        () => _i47.ConnectivityService());
     gh.lazySingleton<_i680.HttpApiDatasource>(() => _i680.HttpApiDatasource());
     gh.lazySingleton<_i148.DeviceIdService>(
         () => _i148.DeviceIdService(gh<_i460.SharedPreferences>()));
@@ -71,6 +74,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i327.UpdateBookingStatusUseCase>(),
           gh<_i951.CancelBookingUseCase>(),
           gh<_i856.EditBookingUseCase>(),
+          gh<_i47.ConnectivityService>(),
         ));
     return this;
   }

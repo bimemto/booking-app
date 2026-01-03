@@ -83,7 +83,16 @@ class HttpApiDatasource {
         final errors = e.response!.data['errors'];
         throw Exception('Validation error: ${errors.join(', ')}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to create booking: $e');
@@ -107,7 +116,16 @@ class HttpApiDatasource {
       if (e.response != null) {
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to get bookings: $e');
@@ -131,7 +149,16 @@ class HttpApiDatasource {
         }
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to get booking: $e');
@@ -158,7 +185,16 @@ class HttpApiDatasource {
         }
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to update booking status: $e');
@@ -187,7 +223,16 @@ class HttpApiDatasource {
       if (e.response != null) {
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to get my bookings: $e');
@@ -217,7 +262,16 @@ class HttpApiDatasource {
         }
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to cancel booking: $e');
@@ -298,7 +352,16 @@ class HttpApiDatasource {
         }
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to edit booking: $e');
@@ -333,7 +396,16 @@ class HttpApiDatasource {
       if (e.response != null) {
         throw Exception('Server error: ${e.response!.data['message']}');
       } else {
-        throw Exception('Network error: ${e.message}');
+        // Network connectivity errors
+        if (e.type == DioExceptionType.connectionTimeout) {
+          throw Exception('Connection timeout. Please check your internet connection and try again.');
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          throw Exception('Server is taking too long to respond. Please try again.');
+        } else if (e.type == DioExceptionType.connectionError) {
+          throw Exception('No internet connection. Please check your network settings and try again.');
+        } else {
+          throw Exception('Network error. Please check your internet connection and try again.');
+        }
       }
     } catch (e) {
       throw Exception('Failed to search hotels: $e');
